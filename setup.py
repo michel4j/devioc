@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -16,7 +16,7 @@ setup(
     keywords='epics device ioc development',
     packages=['devioc'],
     scripts=['bin/devioc-startproject'],
-    install_requires=['gepics'],
+    install_requires=['gepics', 'Twisted', 'numpy', 'PyGObject'],
     classifiers=[
         'Intended Audience :: Developers',
         "Programming Language :: Python :: 3",

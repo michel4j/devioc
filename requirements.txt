@@ -1,0 +1,4 @@
+gepics
+numpy
+PyGObject
+Twisted
