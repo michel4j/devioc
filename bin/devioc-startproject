@@ -1,0 +1,255 @@
+#!/usr/bin/python3
+
+import argparse
+import errno
+import os
+import re
+
+
+def slugify(text):
+    return re.sub(r'[^a-z0-9]+', '', str(text))
+
+
+RUNIOC_TMPL = """#!/usr/bin/python3
+import os
+import logging
+import sys
+import argparse
+
+# Twisted boiler-plate code.
+from twisted.internet import gireactor
+gireactor.install()
+from twisted.internet import reactor
+
+# add the project to the python path and inport it
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from softdev import log
+from {project_name} import ioc
+
+# Setup single argument for verbose logging
+parser = argparse.ArgumentParser(description='Run IOC Application')
+parser.add_argument('-v', action='store_true', help='Verbose Logging')
+parser.add_argument('--device', type=str, help='Device Name', required=True)
+   
+# Example of how to start your APP. Modify as needed
+
+if __name__== '__main__':
+    args = parser.parse_args()
+    if args.v:
+        log.log_to_console(logging.DEBUG)
+    else:
+        log.log_to_console(logging.INFO)
+
+    app = ioc.{app_name}(args.device)  # initialize App
+    reactor.addSystemEventTrigger('before', 'shutdown', app.shutdown) # make sure app is properly shutdown
+    reactor.run()               # run main-loop
+
+"""
+
+IOC_TMPL = """
+from devioc import models, log
+
+# Create your models here. Modify the example below as appropriate
+
+class {model_name}(models.Model):
+    number = models.Enum('number', choices=['ZERO', 'ONE', 'TWO'], default=0, desc='Enum Test')
+    toggle = models.Toggle('toggle', zname='ON', oname='OFF', desc='Toggle Test')
+    sstring = models.String('sstring', max_length=20, desc='Short String Test')
+    lstring = models.String('lstring', max_length=512, desc='Long String Test')
+    intval = models.Integer('intval', max_val=1000, min_val=-1000, default=0, desc='Int Test')
+    floatval = models.Float('floatval', max_val=1e6, min_val=1e-6, default=0.0, desc='Float Test')
+    floatout = models.Float('floatout', desc='Test Float Output')
+    intarray = models.Array('intarray', type=int, length=16, desc='Int Array Test')
+    floatarray = models.Array('floatarray', type=float, length=16, desc='Float Array Test')
+    calc = models.Calc('calc', calc='A+B', inpa='$(device):intval CP NMS', inpb='$(device):floatval CP NMS', desc='Calc Test')
+
+
+# create your app here. Modify the following example as appropriate
+
+class {app_name}(object):
+    def __init__(self, device_name):
+        self.ioc = {model_name}(device_name, callbacks=self)
+    
+    def do_toggle(self, pv, value, ioc):
+        if value == 1:
+            # Command activated, value will return to 0 after some time 
+            print('Toggle Changed Value', pv, value, ioc)
+            ioc.number.put((ioc.number.get() + 1) % 3, wait=True)  # cycle through values
+    
+    def do_number(self, pv, value, ioc):
+        print('New Enum Value', value)
+
+    def shutdown(self):
+        # needed for proper IOC shutdown
+        self.ioc.shutdown()
+        
+"""
+
+INIT_TMPL = """#!/bin/sh
+#
+# chkconfig: 345 98 02
+# description:  EPICS IOC
+
+
+# -------------- Environment Parameters (MODIFY) for each instance -----------------------#
+
+ioc_path=/path/to/ioc/installation                  # location where IOC Code is installed
+procserv_path=/path/to/procserv                     # location where procserv is installed
+epics_env=/path/to/epics/environment/epics.sh       # EPICS environment setup script
+
+# -------------- Device Parameters (MODIFY) for each instance ----------------------------#
+device='IOC0000-000'                                # Device Name
+portno=18001                                        # ProcServ Port Number
+network="10.0.0.0/24"                               # ProcServ Subnet
+appdir=/path/to/ioc/instance/${device}              # IOC Directory
+                                                    
+# Define additional command line arguments here and add them to the start function after 
+# the --device '$device" text
+
+
+# --------------------- Update Only once for each IOC Type ------------------------------#
+iocname=`hostname`
+cmdfile=${ioc_path}/bin/runIOC.py
+proccmd=${procserv_path}/procServ
+pidfile="/var/run/${device}.pid"
+logfile="/var/log/${device}.log"
+
+# Prepare environment and  Source function library.
+. /etc/rc.d/init.d/functions
+. ${epics_env}
+
+# Sanity checks.
+[ -x $proccmd ] || exit 0
+[ -x $cmdfile ] || exit 0
+
+
+start() {
+    echo -n $"Starting procServ: "
+    #--allow --network $network
+    daemon $proccmd -c $appdir --noautorestart --logfile="$logfile" --pidfile="$pidfile" \
+             --allow $portno $cmdfile --device "$device" 
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$device
+}
+
+stop() {
+    echo -n $"Stopping procServ: "
+
+    killproc -p $pidfile
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 0 ]; then
+        rm -f /var/lock/subsys/$device
+        rm -f /var/run/$pidfile
+    fi
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status -p $pidfile $device
+        RETVAL=$?
+        ;;
+    restart)
+        stop
+	    sleep 3
+        start
+        ;;
+    condrestart)
+        if [ -f /var/lock/subsys/$device ]; then
+            stop
+	        sleep 3
+            start
+        fi
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart}"
+        ;;
+esac
+exit $RETVAL
+"""
+
+README_TMPL = """
+{project_name}
+{underline}
+
+A python based Soft IOC Server.
+
+Usage
+=====
+In order to use "{project_name}", you need have a functioning install of python-softdev and its requirements and procServ.
+ 
+1. Create a directory for the IOC instance. The directory should be named exactly like the device name but the location
+   is irelevant. 
+2. Copy the init-template file to /etc/init.d and rename it as appropriate.
+3. Edit the file from (2) above to reflect your environment and to set all the required instance parameters
+4. Enable the init file using your system commands. For example, `systemctl enable <init-file-name>`.
+5. Start the init file using your system commands. For example `systemctl start <init-file-name>`.
+
+You can manage the instance daemon through procServ, by telneting to the configured port. 
+
+"""
+
+
+def startproject(name):
+    name = slugify(name)  # slugify the name
+    project_dir = os.path.join(os.getcwd(), name)
+    bin_dir = os.path.join(project_dir, 'bin')
+    ioc_dir = os.path.join(project_dir, name)
+    opi_dir = os.path.join(project_dir, 'opi')
+    deploy_dir = os.path.join(project_dir, 'deploy')
+
+    # create directories
+    for path in [project_dir, bin_dir, ioc_dir, opi_dir, deploy_dir]:
+        try:
+            os.makedirs(path)
+        except OSError as e:
+            if e.errno == errno.EEXIST and os.path.isdir(path):
+                pass
+            else:
+                raise
+
+    # create files
+    model_name = name.title()
+    app_name = '{}App'.format(model_name)
+
+    bin_file = os.path.join(bin_dir, 'runIOC.py')
+    initd_file = os.path.join(deploy_dir, 'init-template')
+    readme_file = os.path.join(project_dir, 'README.md')
+
+    with open(bin_file, 'w') as handle:
+        handle.write(RUNIOC_TMPL.format(project_name=name, app_name=app_name))
+
+    with open(initd_file, 'w') as handle:
+        handle.write(INIT_TMPL)
+
+    with open(readme_file, 'w') as handle:
+        handle.write(README_TMPL.format(project_name=name, underline='=' * len(name)))
+
+    # make file executable
+    os.chmod(bin_file, 0o755)
+    os.chmod(initd_file, 0o755)
+
+    ioc_file = os.path.join(ioc_dir, 'ioc.py')
+    init_file = os.path.join(ioc_dir, '__init__.py')
+    with open(ioc_file, 'w') as handle:
+        handle.write(IOC_TMPL.format(project_name=name, model_name=model_name, app_name=app_name))
+
+    with open(init_file, 'w') as handle:
+        pass
+
+    print('SoftDev Project `{}` created!'.format(name))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Create A SoftDev Project.')
+    parser.add_argument('name', metavar='name', type=str, nargs=1, help='the project name, single word')
+    args = parser.parse_args()
+    startproject(args.name)
