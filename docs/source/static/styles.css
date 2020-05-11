@@ -1,0 +1,112 @@
+@import 'css/theme.css';  /* for RTD */
+
+
+
+tt, code, kbd, pre, samp {
+	font-family: "Fira Mono", Consolas, Menlo, Monaco, "Courier New", Courier, monospace;
+	font-variant-ligatures: no-common-ligatures;
+	text-rendering: optimizeSpeed;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    padding: 1.5rem;
+}
+
+.rst-content pre, .rst-content kbd, .rst-content samp,
+.rst-content tt, .rst-content tt, .rst-content code,
+.rst-content pre.literal-block, .rst-content div[class^="highlight"] pre, .rst-content .linenodiv pre
+{
+	font-family: "Fira Mono", "Fira Code", Consolas, Menlo, Monaco, "Courier New", Courier, monospace;
+}
+
+.rst-content pre.literal-block, .rst-content div[class^="highlight"] pre, .rst-content .linenodiv pre {
+	font-size: 14px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    padding: 1.5rem
+
+}
+
+.rst-content dl:not(.docutils) dt {
+	border-top: solid 1px #6ab0de;
+}
+
+.rst-content dl:not(.docutils) tt.descclassname,
+.rst-content dl:not(.docutils) code.descclassname {
+	font-weight: 200;
+}
+
+.rst-content dl:not(.docutils) .property {
+	font-variant: small-caps;
+	color: gray;
+    font-weight: 200;
+}
+
+
+.rst-content dl:not(.docutils) dl dt {
+	border: none;
+    background: transparent;
+    padding: 0.25rem 0;
+}
+
+.rst-content dl:not(.docutils) dl:not(.field-list) > dt {
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.2);
+}
+
+dl.method > dd {
+    margin: 0;
+}
+
+.rst-content dl p{
+	margin-bottom: 0.25rem !important;
+}
+
+.wy-table-responsive table td, .wy-table-responsive table th {
+	white-space: normal;
+}
+
+.wy-side-nav-search input[type="text"] {
+    border-color: transparent;
+}
+
+.wy-nav-content {
+    margin: initial;
+}
+
+a.icon-home, a.icon-home:hover {
+    display: inline-block;
+    padding: 4px 4px 4px 21px;
+    background: transparent url(icon.svg) center left no-repeat;
+    background-size: 2em;
+    margin-top: 0.2em;
+    margin-bottom: 1em;
+}
+
+
+.fa-home::before, .icon-home::before {
+    content: "";
+    margin-right: 0.5rem;
+}
+
+.wy-nav-top a {
+    margin: -2em;
+    background: transparent url(icon.svg) center left no-repeat;
+    background-size: 2em;
+    padding: 4px 4px 4px 24px;
+}
+
+.rst-content dl:not(.docutils) dt {
+	display: block;
+	margin: 6px 0;
+	font-size: inherit;
+}
+
+dl.field-list > dt, dl.class > dd > p.rubric, dl.method > dd > dl.simple > dt {
+    font-style: italic;
+    font-weight: 200;
+    color: #777 !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0 !important;
+}
