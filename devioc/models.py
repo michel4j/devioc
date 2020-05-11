@@ -1,11 +1,15 @@
 import collections
 import multiprocessing
 import os
+import sys
 import shutil
 import subprocess
+import sys
 import time
 from enum import EnumMeta
+
 import gepics
+
 from . import log
 
 ENUM_KEYS = [
@@ -363,6 +367,22 @@ class ModelType(type):
         return super(ModelType, cls).__new__(cls, name, bases, attrs)
 
 
+def run_softioc(args, stdin_id, stdout_id):
+    """
+    Launch EPICS ioc binary
+
+    :param args:
+    :param stdin_id:
+    :return:
+    """
+    with os.fdopen(stdout_id) as stdout:
+        with os.fdopen(stdin_id) as stdin:
+            subprocess.check_call(args, stdin=stdin, stdout=stdout)
+
+
+
+
+
 class Model(object, metaclass=ModelType):
 
     def __init__(self, device_name, callbacks=None, command='softIoc', macros=None):
@@ -418,10 +438,10 @@ class Model(object, metaclass=ModelType):
 
             cmd_file.write(CMD_TEMPLATE.format(macros=macro_text, db_name=db_name))
         os.chdir(self.db_cache_dir)
+        args = [self.command, '{}.cmd'.format(db_name)]
         self.ioc_process = multiprocessing.Process(
-            target=subprocess.check_call,
-            args=([self.command, '{}.cmd'.format(db_name)],),
-            kwargs={'stdin': subprocess.PIPE}
+            target=run_softioc,
+            args=(args, sys.stdin.fileno(), sys.stdout.fileno()),
         )
         self.ioc_process.daemon = True
         self.ioc_process.start()
@@ -431,6 +451,7 @@ class Model(object, metaclass=ModelType):
         Shutdown the ioc application
         """
         self.ioc_process.terminate()
+        subprocess.check_call('reset', shell=True)
         shutil.rmtree(self.db_cache_dir)
 
     def _setup(self):

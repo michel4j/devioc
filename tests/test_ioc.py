@@ -58,15 +58,16 @@ class IOCTestCase(unittest.TestCase):
         self.assertEqual(val, pv.get(), 'Put Failed: Values do not match: {} vs {}'.format(val, pv.get()))
 
     def test_sstring(self):
-        val = 'softdev is cool'
+        val = 'devioc is cool'
         pv = self.ioc.sstring
         pv.put(val, wait=True)
         self.assertEqual(val, pv.get(), 'Put Failed: Values do not match: {} vs {}'.format(val, pv.get()))
 
     def test_lstring(self):
-        val = 'softdev is cool, this is a very long string which should not fit in the small space of a regular string'
+        val = 'devioc is cool, this is a very long string which should not fit in the small space of a regular string'
         pv = self.ioc.lstring
         pv.put(val, wait=True)
+        print(val, pv.get())
         self.assertEqual(val, pv.get(), 'Put Failed: Values do not match: {} vs {}'.format(val, pv.get()))
 
     def test_integer(self):
