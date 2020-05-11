@@ -1,0 +1,443 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>DevIOC - EPICS Soft Device Support With Python &mdash; DevIOC 2019.7.2.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/styles.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> DevIOC
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2019.7.2.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Overview</a></li>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#write-your-first-ioc">Write your first IOC</a></li>
+<li><a class="reference internal" href="#creating-the-ioc-model">Creating the IOC Model</a></li>
+<li><a class="reference internal" href="#creating-the-ioc-application">Creating the IOC Application</a></li>
+<li><a class="reference internal" href="#running-the-ioc-application">Running the IOC Application</a></li>
+<li><a class="reference internal" href="#record-types">Record Types</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">DevIOC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>DevIOC - EPICS Soft Device Support With Python</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <a class="reference internal image-reference" href="_images/icon.svg"><img alt="_images/icon.svg" class="align-center" src="_images/icon.svg" width="120px" /></a>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>DevIOC is a package which enables python based EPICS IOC Soft Device support all within python. It
+allows you to define the IOC database model in a manner similar to Django Database models, and to use
+the model to develop dynamic, IOC servers.</p>
+<p>To use the full capabilities, it is is highly recommended to use a GObject compatible main loop, such as the
+one provided by <cite>PyGObject</cite> or even better, the GObject compatible <cite>Twisted</cite> reactor.</p>
+<p>This library has been used to support very complex network IOC devices with non-trivial communication
+protocols. It works!</p>
+</div>
+<div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>Before you can use DevIOC, you’ll need to install it and its dependencies.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install -r devioc
+</pre></div>
+</div>
+<p>It is a pure python module, although it requires
+<a class="reference external" href="https://pypi.org/project/PyGObject/">PyGObject</a>, <a class="reference external" href="https://pypi.org/project/numpy/">Numpy</a> and
+<a class="reference external" href="https://pypi.org/project/Twisted/">Twisted</a>.</p>
+<p>DevIOC Also requires a fully functional <a class="reference external" href="https://epics.anl.gov/base/index.php">EPICS Base</a> installation. If you haven’t so yet,
+please build and install EPICS Base. It has been tested with EPICS Base versions 3.14 to 3.16.</p>
+<p>Once it is installed, you can run the tests to make sure your system is properly _setup, and all required
+dependencies are available.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m unittest -v test.test_ioc
+</pre></div>
+</div>
+</div>
+<div class="section" id="write-your-first-ioc">
+<h1>Write your first IOC<a class="headerlink" href="#write-your-first-ioc" title="Permalink to this headline">¶</a></h1>
+<p>Your IOC application can be structured at will although we recommend the following directory template</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>myioc
+├── bin
+│   ├── runIOC.py    # Command to run IOC Application
+│   └── runOpCtrl    # Command to run Operator Display Application
+├── opi              # Directory containing Operator Display screens
+└── myioc            # Python package for your IOC Application and all other supporting modules
+    ├── __init__.py
+    └── ioc.py       # IOC module containing your IOC application
+</pre></div>
+</div>
+<p>A program is included to create a default IOC project.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ devioc-startproject myioc
+</pre></div>
+</div>
+<p>That will create a directory structure similar to the one listed above, except the <cite>runOpCtrl</cite> file which you
+will have to create yourself based on your preferred EPICS display manager.</p>
+</div>
+<div class="section" id="creating-the-ioc-model">
+<h1>Creating the IOC Model<a class="headerlink" href="#creating-the-ioc-model" title="Permalink to this headline">¶</a></h1>
+<p>If you are familar with the Django Framework, the IOC model should feel natural. All IOC models should inherit
+from <strong>softioc.models.Model</strong> and declare database records using the record types defined in <strong>softioc.models</strong>.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">devioc</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">MyIOC</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">enum</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;enum&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ZERO&#39;</span><span class="p">,</span> <span class="s1">&#39;ONE&#39;</span><span class="p">,</span> <span class="s1">&#39;TWO&#39;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Enum Test&#39;</span><span class="p">)</span>
+    <span class="n">toggle</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Toggle</span><span class="p">(</span><span class="s1">&#39;toggle&#39;</span><span class="p">,</span> <span class="n">zname</span><span class="o">=</span><span class="s1">&#39;ON&#39;</span><span class="p">,</span> <span class="n">oname</span><span class="o">=</span><span class="s1">&#39;OFF&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Toggle Test&#39;</span><span class="p">)</span>
+    <span class="n">sstring</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s1">&#39;sstring&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Short String Test&#39;</span><span class="p">)</span>
+    <span class="n">lstring</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s1">&#39;lstring&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Long String Test&#39;</span><span class="p">)</span>
+    <span class="n">intval</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="s1">&#39;intval&#39;</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=-</span><span class="mi">1000</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Int Test&#39;</span><span class="p">)</span>
+    <span class="n">floatval</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span>
+        <span class="s1">&#39;floatval&#39;</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">prec</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Float Test&#39;</span>
+    <span class="p">)</span>
+    <span class="n">floatout</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span><span class="s1">&#39;floatout&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Test Float Output&#39;</span><span class="p">)</span>
+    <span class="n">intarray</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="s1">&#39;intarray&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Int Array Test&#39;</span><span class="p">)</span>
+    <span class="n">floatarray</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="s1">&#39;floatarray&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Float Array Test&#39;</span><span class="p">)</span>
+    <span class="n">calc</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Calc</span><span class="p">(</span>
+        <span class="s1">&#39;calc&#39;</span><span class="p">,</span> <span class="n">calc</span><span class="o">=</span><span class="s1">&#39;A+B&#39;</span><span class="p">,</span>
+        <span class="n">inpa</span><span class="o">=</span><span class="s1">&#39;$(device):intval CP NMS&#39;</span><span class="p">,</span>
+        <span class="n">inpb</span><span class="o">=</span><span class="s1">&#39;$(device):floatval CP NMS&#39;</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Calc Test&#39;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Once the model is defined, it can then be instanciated within the application. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ioc</span> <span class="o">=</span> <span class="n">MyIOC</span><span class="p">(</span><span class="s1">&#39;MYIOC-001&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="devioc.models.Model">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span></em>, <em class="sig-param"><span class="n">callbacks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">command</span><span class="o">=</span><span class="default_value">'softIoc'</span></em>, <em class="sig-param"><span class="n">macros</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Model" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="devioc.models.Model.shutdown">
+<code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Model.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shutdown the ioc application</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>This will create an IOC database with Process variable fields <strong>MYIOC-001:enum, MYIOC-001:toggle, …</strong> etc, where
+the process variable name is generated based on the model name, and the field name.  Once instanciated, the IOC is ready
+to be used and alive on the Channel Access network. However, for more responsive applications, it is recommended to
+to create an IOC Application as well.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#record-types">Record Types</a> for detailed documentation about database records.</p>
+</div>
+</div>
+<div class="section" id="creating-the-ioc-application">
+<h1>Creating the IOC Application<a class="headerlink" href="#creating-the-ioc-application" title="Permalink to this headline">¶</a></h1>
+<p>The IOC Application manages the IOC database and should provide the logic for the application. This can include
+connecting to a device through a serial interface, over the network, handling commands from the model, processing and
+generating new values for the database fields, etc. The sky is the limit.</p>
+<p>For example, let us create an application which uses the model above and responds to changes to the <strong>MYIOC-001:toggle</strong>
+field.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyIOCApp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+ <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">):</span>
+     <span class="bp">self</span><span class="o">.</span><span class="n">ioc</span> <span class="o">=</span> <span class="n">MyIOC</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+ <span class="k">def</span> <span class="nf">do_toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">ioc</span><span class="p">):</span>
+     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     I am called whenever the `toggle` record&#39;s value changes</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+     <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+         <span class="c1"># Command activated, value will return to 0 after some time</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Toggle Changed Value&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+         <span class="n">ioc</span><span class="o">.</span><span class="n">enum</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">ioc</span><span class="o">.</span><span class="n">enum</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># cycle through values</span>
+
+ <span class="k">def</span> <span class="nf">do_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">ioc</span><span class="p">):</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;New Enum Value&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+ <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+     <span class="c1"># needed for proper IOC shutdown</span>
+     <span class="bp">self</span><span class="o">.</span><span class="n">ioc</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This application is initialized with the IOC device name.</p>
+</div>
+<div class="section" id="running-the-ioc-application">
+<h1>Running the IOC Application<a class="headerlink" href="#running-the-ioc-application" title="Permalink to this headline">¶</a></h1>
+<p>The script <strong>bin/runIOC.py</strong> is responsible for running the IOC Application. An example script is generated by the
+<strong>devioc-startproject</strong> command. It can be modified to suit your needs. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="c1"># Twisted boiler-plate code.</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">gireactor</span>
+<span class="n">gireactor</span><span class="o">.</span><span class="n">install</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span>
+
+<span class="c1"># add the project to the python path and inport it</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
+<span class="kn">from</span> <span class="nn">devioc</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">myioc</span> <span class="kn">import</span> <span class="n">ioc</span>
+
+<span class="c1"># Setup command line arguments</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Run IOC Application&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Verbose Logging&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--device&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Device Name&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">v</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">log_to_console</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">log_to_console</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="c1"># initialize App</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">ioc</span><span class="o">.</span><span class="n">MyIOCApp</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="c1"># make sure app is properly shutdown</span>
+    <span class="n">reactor</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s1">&#39;before&#39;</span><span class="p">,</span> <span class="s1">&#39;shutdown&#39;</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">shutdown</span><span class="p">)</span>
+
+    <span class="c1"># run main-loop</span>
+    <span class="n">reactor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This example uses the <a class="reference external" href="https://pypi.org/project/Twisted/">Twisted</a> framework. It is highly recommended to use it too.</p>
+</div>
+<div class="section" id="record-types">
+<h1>Record Types<a class="headerlink" href="#record-types" title="Permalink to this headline">¶</a></h1>
+<p>Records are defined within the <strong>devioc.models</strong> module. The following record types
+are currently supported:</p>
+<dl class="py class">
+<dt id="devioc.models.Record">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Record</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Record" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.Enum">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Enum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">choices</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Enum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.BinaryInput">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">BinaryInput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">inp</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.BinaryInput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.BinaryOutput">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">BinaryOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.BinaryOutput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.Toggle">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Toggle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">high</span><span class="o">=</span><span class="default_value">0.25</span></em>, <em class="sig-param"><span class="n">zname</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">oname</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Toggle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.Integer">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Integer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">max_val</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">min_val</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Integer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.Float">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Float</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">max_val</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">min_val</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">prec</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Float" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.String">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">String</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">max_length</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">' '</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.String" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.Array">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Array</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">type=&lt;class 'int'&gt;</em>, <em class="sig-param">length=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.Calc">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Calc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">scan</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">prec</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Calc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="devioc.models.CalcOut">
+<em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">CalcOut</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">oopt</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dopt</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.CalcOut" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2020, Canadian Light Source, Inc
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
