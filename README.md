@@ -7,3 +7,5 @@ the model to develop dynamic, IOC servers.
 
 To use the full capabilities, it is is highly recommended to use a GObject compatible main loop, such as the
 one provided by `PyGObject` or even better, the GObject compatible `Twisted` reactor.
+
+Detailed documentation is available at https://michel4j.github.io/devioc/

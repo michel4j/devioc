@@ -1,10 +1,9 @@
-.. DevIOC documentation master file, created by
-   sphinx-quickstart on Wed Oct 10 16:34:06 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. title::  DevIOC - EPICS Soft Device Support With Python
 
-DevIOC
-=======
+.. image:: static/icon.svg
+   :align: center
+   :width: 120px
+
 
 .. toctree::
    :maxdepth: 2
