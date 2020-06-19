@@ -1,7 +1,7 @@
 import collections
 import multiprocessing
 import os
-import sys
+import platform
 import shutil
 import subprocess
 import sys
@@ -375,9 +375,14 @@ def run_softioc(args, stdin_id, stdout_id):
     :param stdin_id:
     :return:
     """
-    with os.fdopen(stdout_id) as stdout:
-        with os.fdopen(stdin_id) as stdin:
-            subprocess.check_call(args, stdin=stdin, stdout=stdout)
+
+    if platform.system() == 'Windows':
+        # output redirection not needed on Windows
+        subprocess.check_call(args)
+    else:
+        with os.fdopen(stdout_id) as stdout:
+            with os.fdopen(stdin_id) as stdin:
+                subprocess.check_call(args, stdin=stdin, stdout=stdout)
 
 
 
