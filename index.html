@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DevIOC - EPICS Soft Device Support With Python &mdash; DevIOC 2020.5.0 documentation</title>
+  <title>DevIOC - EPICS Soft Device Support With Python &mdash; DevIOC 2020.5.2 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/styles.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/styles.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -48,7 +49,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> DevIOC
+            <a href="#" class="icon icon-home" alt="Documentation Home"> DevIOC
           
 
           
@@ -58,7 +59,7 @@
             
             
               <div class="version">
-                2020.5.0
+                2020.5.2
               </div>
             
           
@@ -75,6 +76,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -97,6 +99,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -135,7 +138,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
       <li>DevIOC - EPICS Soft Device Support With Python</li>
     
@@ -207,7 +210,7 @@ will have to create yourself based on your preferred EPICS display manager.</p>
 <div class="section" id="creating-the-ioc-model">
 <h1>Creating the IOC Model<a class="headerlink" href="#creating-the-ioc-model" title="Permalink to this headline">¶</a></h1>
 <p>If you are familar with the Django Framework, the IOC model should feel natural. All IOC models should inherit
-from <strong>softioc.models.Model</strong> and declare database records using the record types defined in <strong>softioc.models</strong>.</p>
+from <strong>devioc.models.Model</strong> and declare database records using the record types defined in <strong>devioc.models</strong>.</p>
 <p>For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">devioc</span> <span class="kn">import</span> <span class="n">models</span>
 
@@ -412,6 +415,7 @@ are currently supported:</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2018-2020, Canadian Light Source, Inc
 
     </p>
@@ -426,7 +430,6 @@ are currently supported:</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
