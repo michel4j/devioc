@@ -74,7 +74,7 @@ will have to create yourself based on your preferred EPICS display manager.
 Creating the IOC Model
 ======================
 If you are familar with the Django Framework, the IOC model should feel natural. All IOC models should inherit
-from **softioc.models.Model** and declare database records using the record types defined in **softioc.models**.
+from **devioc.models.Model** and declare database records using the record types defined in **devioc.models**.
 
 For example:
 
