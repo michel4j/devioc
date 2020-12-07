@@ -109,7 +109,7 @@ appdir=/path/to/ioc/instance/${device}              # IOC Directory
 
 # --------------------- Update Only once for each IOC Type ------------------------------#
 iocname=`hostname`
-cmdfile=${ioc_path}/bin/runIOC.py
+cmdfile=${ioc_path}/bin/app.server
 proccmd=${procserv_path}/procServ
 pidfile="/var/run/${device}.pid"
 logfile="/var/log/${device}.log"
@@ -197,17 +197,49 @@ You can manage the instance daemon through procServ, by telneting to the configu
 
 """
 
+SETUP_TMPL = """
+from setuptools import setup
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+
+setup(
+    name='{project_name}',
+    version="1.0.0",
+    url="https://github.com/michel4j/devioc",   # modify this
+    license='MIT',                              # modify this
+    author='Your Name',                         # modify this
+    author_email='your@email.com',              # modify this
+    description='Simple Python based EPICS IOC',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    keywords='epics device ioc development',
+    packages=['{project_name}'],
+    scripts=[
+        'bin/app.server'
+    ],
+    install_requires= [
+        'devioc',
+    ],
+    classifiers=[
+        'Intended Audience :: Developers',
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+)
+"""
 
 def startproject(name):
     name = slugify(name)  # slugify the name
     project_dir = os.path.join(os.getcwd(), name)
     bin_dir = os.path.join(project_dir, 'bin')
     ioc_dir = os.path.join(project_dir, name)
-    opi_dir = os.path.join(project_dir, 'opi')
     deploy_dir = os.path.join(project_dir, 'deploy')
 
     # create directories
-    for path in [project_dir, bin_dir, ioc_dir, opi_dir, deploy_dir]:
+    for path in [project_dir, bin_dir, ioc_dir, deploy_dir]:
         try:
             os.makedirs(path)
         except OSError as e:
@@ -220,12 +252,16 @@ def startproject(name):
     model_name = name.title()
     app_name = '{}App'.format(model_name)
 
-    bin_file = os.path.join(bin_dir, 'runIOC.py')
+    bin_file = os.path.join(bin_dir, 'app.server')
     initd_file = os.path.join(deploy_dir, 'init-template')
+    setup_file = os.path.join(project_dir, 'setup.py')
     readme_file = os.path.join(project_dir, 'README.md')
 
     with open(bin_file, 'w') as handle:
         handle.write(RUNIOC_TMPL.format(project_name=name, app_name=app_name))
+
+    with open(setup_file, 'w') as handle:
+        handle.write(SETUP_TMPL.format(project_name=name, app_name=app_name))
 
     with open(initd_file, 'w') as handle:
         handle.write(INIT_TMPL)
@@ -245,11 +281,11 @@ def startproject(name):
     with open(init_file, 'w') as handle:
         pass
 
-    print('SoftDev Project `{}` created!'.format(name))
+    print('DevIOC Project `{}` created!'.format(name))
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Create A SoftDev Project.')
+    parser = argparse.ArgumentParser(description='Create A DevIOC Project.')
     parser.add_argument('name', metavar='name', type=str, nargs=1, help='the project name, single word')
     args = parser.parse_args()
     startproject(args.name)

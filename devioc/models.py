@@ -385,16 +385,13 @@ def run_softioc(args, stdin_id, stdout_id):
                 subprocess.check_call(args, stdin=stdin, stdout=stdout)
 
 
-
-
-
 class Model(object, metaclass=ModelType):
 
     def __init__(self, device_name, callbacks=None, command='softIoc', macros=None):
         """
         IOC Database Model
 
-        :param device_name:  Root Name of device
+        :param device_name:  Root Name of device this will be available as the $(device) macro within the model
         :param callbacks: Callback handler which provides callback methods for handling events and commands
         :param command: The softIoc command to execute. By default this is 'softIoc' from EPICS base.
         :param macros: additional macros to be used in the database as a dictionary
