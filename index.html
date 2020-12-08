@@ -376,10 +376,12 @@ are currently supported:</p>
 <dd><p>Base class for all record types. Do not use directly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record name (str)</p></li>
-<li><p><strong>desc</strong> – Description (str)</p></li>
-<li><p><strong>kwargs</strong> – additional keyword arguments</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record name (str)</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>desc</strong> – Description (str). Sets the DESC field</p></li>
+<li><p><strong>*</strong> – additional keyword arguments</p></li>
 </ul>
 </dd>
 </dl>
@@ -391,11 +393,13 @@ are currently supported:</p>
 <dd><p>Enum record type</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record name (str)</p></li>
-<li><p><strong>choices</strong> – list/tuple of strings corresponding to the choice names, values will be 0-index integers</p></li>
-<li><p><strong>default</strong> – default value of the record, 0 by default</p></li>
-<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record name (str)</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>choices</strong> – list/tuple of strings corresponding to the choice names, values will be 0-index integers.</p></li>
+<li><p><strong>default</strong> – default value of the record, 0 by default. Sets the VAL field</p></li>
+<li><p><strong>*</strong> – Extra keyword arguments</p></li>
 </ul>
 </dd>
 </dl>
@@ -407,12 +411,14 @@ are currently supported:</p>
 <dd><p>Binary record type for converting between integers and bits</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record name (str)</p></li>
-<li><p><strong>inp</strong> – Input link</p></li>
-<li><p><strong>shift</strong> – shift value by this number of bits to the right</p></li>
-<li><p><strong>default</strong> – default value of the record, 0 by default</p></li>
-<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record name (str)</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>inp</strong> – Input link. Sets the INP field</p></li>
+<li><p><strong>shift</strong> – shift value by this number of bits to the right. Sets the SHFT field</p></li>
+<li><p><strong>default</strong> – default value of the record, 0 by default. Sets the VAL field</p></li>
+<li><p><strong>*</strong> – Extra keyword arguments</p></li>
 </ul>
 </dd>
 </dl>
@@ -424,12 +430,14 @@ are currently supported:</p>
 <dd><p>Binary record type for converting between integers and bits</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record name (str)</p></li>
-<li><p><strong>default</strong> – default value of the record, 0 by default</p></li>
-<li><p><strong>out</strong> – output link</p></li>
-<li><p><strong>shift</strong> – shift value by this number of bits to the right</p></li>
-<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record name (str)</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>out</strong> – Output link specification. Sets the OUT field</p></li>
+<li><p><strong>shift</strong> – shift value by this number of bits to the right. Sets the SHFT field</p></li>
+<li><p><strong>default</strong> – default value of the record, 0 by default. Sets the VAL field</p></li>
+<li><p><strong>*</strong> – Extra keyword arguments</p></li>
 </ul>
 </dd>
 </dl>
@@ -441,12 +449,14 @@ are currently supported:</p>
 <dd><p>Toggle field corresponding to a binary out record.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record name (str)</p></li>
-<li><p><strong>high</strong> – Duration to keep high before returning to zero</p></li>
-<li><p><strong>zname</strong> – string value when zero</p></li>
-<li><p><strong>oname</strong> – string value when high</p></li>
-<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record name (str)</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>high</strong> – Duration to keep high before returning to zero. Sets the HIGH field.</p></li>
+<li><p><strong>zname</strong> – string value when zero. Sets the ZNAM field</p></li>
+<li><p><strong>oname</strong> – string value when high. Sets the ONAM field</p></li>
+<li><p><strong>*</strong> – Extra keyword arguments</p></li>
 </ul>
 </dd>
 </dl>
@@ -458,13 +468,15 @@ are currently supported:</p>
 <dd><p>Integer Record.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record Name.</p></li>
-<li><p><strong>max_val</strong> – Maximum value permitted (int), default (no limit)</p></li>
-<li><p><strong>min_val</strong> – Minimum value permitted (int), default (no limit)</p></li>
-<li><p><strong>default</strong> – default value, default (0)</p></li>
-<li><p><strong>units</strong> – engineering units (str), default empty string</p></li>
-<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record Name.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>max_val</strong> – Maximum value permitted (float), default (no limit). Sets the DRVH and HOPR fields</p></li>
+<li><p><strong>min_val</strong> – Minimum value permitted (float), default (no limit). Sets the DRVL and LOPR fields</p></li>
+<li><p><strong>default</strong> – default value, default (0.0). Sets the VAL field</p></li>
+<li><p><strong>units</strong> – engineering units (str), default empty string. Sets the EGU field</p></li>
+<li><p><strong>*</strong> – Extra keyword arguments</p></li>
 </ul>
 </dd>
 </dl>
@@ -476,14 +488,16 @@ are currently supported:</p>
 <dd><p>Float Record.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record Name.</p></li>
-<li><p><strong>max_val</strong> – Maximum value permitted (float), default (no limit)</p></li>
-<li><p><strong>min_val</strong> – Minimum value permitted (float), default (no limit)</p></li>
-<li><p><strong>default</strong> – default value, default (0.0)</p></li>
-<li><p><strong>prec</strong> – number of decimal places, default (4)</p></li>
-<li><p><strong>units</strong> – engineering units (str), default empty string</p></li>
-<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record Name.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>max_val</strong> – Maximum value permitted (float), default (no limit). Sets the DRVH and HOPR fields</p></li>
+<li><p><strong>min_val</strong> – Minimum value permitted (float), default (no limit). Sets the DRVL and LOPR fields</p></li>
+<li><p><strong>default</strong> – default value, default (0.0). Sets the VAL field</p></li>
+<li><p><strong>prec</strong> – number of decimal places, default (4). Sets the PREC field</p></li>
+<li><p><strong>units</strong> – engineering units (str), default empty string. Sets the EGU field</p></li>
+<li><p><strong>*</strong> – Extra keyword arguments</p></li>
 </ul>
 </dd>
 </dl>
@@ -495,11 +509,14 @@ are currently supported:</p>
 <dd><p>String record. Uses standard string record, or character array depending on length</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record name (str)</p></li>
-<li><p><strong>max_length</strong> – maximum number of characters expected. A different EPICS record will be used for fields bigger than 40 characters.</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record name (str)</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>max_length</strong> – maximum number of characters expected. Char Array records will be used for fields bigger than 40 characters, in
+which case the NELM and FTVL field will be set.</p></li>
 <li><p><strong>default</strong> – default value, empty string by default</p></li>
-<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+<li><p><strong>*</strong> – Extra keyword arguments</p></li>
 </ul>
 </dd>
 </dl>
@@ -527,11 +544,15 @@ are currently supported:</p>
 <dd><p>Calc Record</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record name</p></li>
-<li><p><strong>scan</strong> – scan parameter, default (0 ie passive)</p></li>
-<li><p><strong>prec</strong> – number of decimal places, default (4)</p></li>
-<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record name</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>scan</strong> – scan parameter, default (0 ie passive). Sets the SCAN field</p></li>
+<li><p><strong>prec</strong> – number of decimal places, default (4). Sets the PREC field</p></li>
+<li><p><strong>calc</strong> – Calculation. Sets CALC field</p></li>
+<li><p><strong>inpa</strong> – Input A specification. Sets the INPA field</p></li>
+<li><p><strong>*</strong> – Extra keyword arguments. Any additional database fields required should be specified as lower-case kwargs.</p></li>
 </ul>
 </dd>
 </dl>
@@ -543,10 +564,14 @@ are currently supported:</p>
 <dd><p>CalcOutput Record</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Record name</p></li>
-<li><p><strong>out</strong> – Output record</p></li>
-<li><p><strong>kwargs</strong> – Extra keyword arguments, supports Calc kwargs also.</p></li>
+<dd class="field-odd"><p><strong>name</strong> – Record name</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>out</strong> – OUT Output specification</p></li>
+<li><p><strong>oopt</strong> – OOPT Output Execute field</p></li>
+<li><p><strong>dopt</strong> – DOPT Output Data field</p></li>
+<li><p><strong>*</strong> – Extra keyword arguments, supports Calc kwargs also.</p></li>
 </ul>
 </dd>
 </dl>
