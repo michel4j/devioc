@@ -109,6 +109,19 @@ Once the model is defined, it can then be instanciated within the application. F
 
    ioc = MyIOC('MYIOC-001')
 
+
+
+.. note::
+    In the example above, the `floatarray` field uses a macro substitution variable `$(device)` within its specification.
+    By default the first argument passed to the model is used as the device name and will be substituted for `$(device)`
+    references.
+
+    Additional macro substitution variables can be used provided to the model during initialization as key-value pairs
+    using the macros keyword argument of the model. In practice, the best way to pass these external variables is to make
+    them command-line arguments of the application, and then forward them to the model through the application as
+    keyword arguments.
+
+
 .. autoclass:: devioc.models.Model
    :members:
 

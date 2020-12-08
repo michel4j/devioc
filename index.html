@@ -239,6 +239,16 @@ from <strong>devioc.models.Model</strong> and declare database records using the
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ioc</span> <span class="o">=</span> <span class="n">MyIOC</span><span class="p">(</span><span class="s1">&#39;MYIOC-001&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the example above, the <cite>floatarray</cite> field uses a macro substitution variable <cite>$(device)</cite> within its specification.
+By default the first argument passed to the model is used as the device name and will be substituted for <cite>$(device)</cite>
+references.</p>
+<p>Additional macro substitution variables can be used provided to the model during initialization as key-value pairs
+using the macros keyword argument of the model. In practice, the best way to pass these external variables is to make
+them command-line arguments of the application, and then forward them to the model through the application as
+keyword arguments.</p>
+</div>
 <dl class="py class">
 <dt id="devioc.models.Model">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span></em>, <em class="sig-param"><span class="n">callbacks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">command</span><span class="o">=</span><span class="default_value">'softIoc'</span></em>, <em class="sig-param"><span class="n">macros</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Model" title="Permalink to this definition">¶</a></dt>
