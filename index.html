@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DevIOC - EPICS Soft Device Support With Python &mdash; DevIOC 2020.5.4 documentation</title>
+  <title>DevIOC - EPICS Soft Device Support With Python &mdash; DevIOC 2020.5.5 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                2020.5.4
+                2020.5.5
               </div>
             
           
@@ -244,7 +244,7 @@ from <strong>devioc.models.Model</strong> and declare database records using the
 <p>In the example above, the <cite>floatarray</cite> field uses a macro substitution variable <cite>$(device)</cite> within its specification.
 By default the first argument passed to the model is used as the device name and will be substituted for <cite>$(device)</cite>
 references.</p>
-<p>Additional macro substitution variables can be used provided to the model during initialization as key-value pairs
+<p>Additional macro substitution variables can be used and provided to the model during initialization as key-value pairs
 using the macros keyword argument of the model. In practice, the best way to pass these external variables is to make
 them command-line arguments of the application, and then forward them to the model through the application as
 keyword arguments.</p>
@@ -252,7 +252,28 @@ keyword arguments.</p>
 <dl class="py class">
 <dt id="devioc.models.Model">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span></em>, <em class="sig-param"><span class="n">callbacks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">command</span><span class="o">=</span><span class="default_value">'softIoc'</span></em>, <em class="sig-param"><span class="n">macros</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Model" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
+<dd><p>IOC Database Model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device_name</strong> – Root Name of device this will be available as the $(device) macro within the model</p></li>
+<li><p><strong>callbacks</strong> – Callback handler which provides callback methods for handling events and commands</p></li>
+<li><p><strong>command</strong> – The softIoc command to execute. By default this is ‘softIoc’ from EPICS base.</p></li>
+<li><p><strong>macros</strong> – additional macros to be used in the database as a dictionary</p></li>
+</ul>
+</dd>
+</dl>
+<p>Process Variable records will be named <em>&lt;device_name&gt;:&lt;record_name&gt;</em>.</p>
+<p>If Callback Handler is not provided, it is assumed that all callbacks are defined within the model itself.
+The expected callback methods must follow the signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">do_</span><span class="o">&lt;</span><span class="n">record_name</span><span class="o">&gt;</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">ioc</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>which accepts the active record (pv), the changed value (value) and the ioc instance (ioc). If the Model
+is also the callbacks provider, self, and ioc are identical, otherwise ioc is a reference to the database
+model on which the record resides.</p>
+<dl class="py method">
 <dt id="devioc.models.Model.shutdown">
 <code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Model.shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shutdown the ioc application</p>
@@ -352,57 +373,184 @@ are currently supported:</p>
 <dl class="py class">
 <dt id="devioc.models.Record">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Record</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Record" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Base class for all record types. Do not use directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record name (str)</p></li>
+<li><p><strong>desc</strong> – Description (str)</p></li>
+<li><p><strong>kwargs</strong> – additional keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.Enum">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Enum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">choices</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Enum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Enum record type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record name (str)</p></li>
+<li><p><strong>choices</strong> – list/tuple of strings corresponding to the choice names, values will be 0-index integers</p></li>
+<li><p><strong>default</strong> – default value of the record, 0 by default</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.BinaryInput">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">BinaryInput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">inp</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.BinaryInput" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Binary record type for converting between integers and bits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record name (str)</p></li>
+<li><p><strong>inp</strong> – Input link</p></li>
+<li><p><strong>shift</strong> – shift value by this number of bits to the right</p></li>
+<li><p><strong>default</strong> – default value of the record, 0 by default</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.BinaryOutput">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">BinaryOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.BinaryOutput" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Binary record type for converting between integers and bits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record name (str)</p></li>
+<li><p><strong>default</strong> – default value of the record, 0 by default</p></li>
+<li><p><strong>out</strong> – output link</p></li>
+<li><p><strong>shift</strong> – shift value by this number of bits to the right</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.Toggle">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Toggle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">high</span><span class="o">=</span><span class="default_value">0.25</span></em>, <em class="sig-param"><span class="n">zname</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">oname</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Toggle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Toggle field corresponding to a binary out record.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record name (str)</p></li>
+<li><p><strong>high</strong> – Duration to keep high before returning to zero</p></li>
+<li><p><strong>zname</strong> – string value when zero</p></li>
+<li><p><strong>oname</strong> – string value when high</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.Integer">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Integer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">max_val</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">min_val</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Integer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Integer Record.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record Name.</p></li>
+<li><p><strong>max_val</strong> – Maximum value permitted (int), default (no limit)</p></li>
+<li><p><strong>min_val</strong> – Minimum value permitted (int), default (no limit)</p></li>
+<li><p><strong>default</strong> – default value, default (0)</p></li>
+<li><p><strong>units</strong> – engineering units (str), default empty string</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.Float">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Float</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">max_val</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">min_val</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">prec</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Float" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Float Record.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record Name.</p></li>
+<li><p><strong>max_val</strong> – Maximum value permitted (float), default (no limit)</p></li>
+<li><p><strong>min_val</strong> – Minimum value permitted (float), default (no limit)</p></li>
+<li><p><strong>default</strong> – default value, default (0.0)</p></li>
+<li><p><strong>prec</strong> – number of decimal places, default (4)</p></li>
+<li><p><strong>units</strong> – engineering units (str), default empty string</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.String">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">String</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">max_length</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">' '</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.String" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>String record. Uses standard string record, or character array depending on length</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record name (str)</p></li>
+<li><p><strong>max_length</strong> – maximum number of characters expected. A different EPICS record will be used for fields bigger than 40 characters.</p></li>
+<li><p><strong>default</strong> – default value, empty string by default</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.Array">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Array</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">type=&lt;class 'int'&gt;</em>, <em class="sig-param">length=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Array" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Array Record.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record Name</p></li>
+<li><p><strong>type</strong> – Element type (str or python type), supported types are [‘STRING’, ‘SHORT’, ‘FLOAT’, int, str, float]</p></li>
+<li><p><strong>length</strong> – Number of elements in the array</p></li>
+<li><p><strong>kwargs</strong> – Extra kwargs</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.Calc">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Calc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">scan</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">prec</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Calc" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Calc Record</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record name</p></li>
+<li><p><strong>scan</strong> – scan parameter, default (0 ie passive)</p></li>
+<li><p><strong>prec</strong> – number of decimal places, default (4)</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="devioc.models.CalcOut">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">CalcOut</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">oopt</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dopt</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.CalcOut" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>CalcOutput Record</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Record name</p></li>
+<li><p><strong>out</strong> – Output record</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments, supports Calc kwargs also.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="indices-and-tables">
