@@ -37,6 +37,14 @@ class RecordType(type):
 
 
 class Record(object, metaclass=RecordType):
+    """
+    Base class for all record types. Do not use directly.
+
+    :param name: Record name (str)
+    :param desc: Description (str)
+    :param kwargs: additional keyword arguments
+    """
+
     required = ['name', 'desc']
     record = 'ai'
     fields = {
@@ -44,13 +52,6 @@ class Record(object, metaclass=RecordType):
     }
 
     def __init__(self, name, desc=None, **kwargs):
-        """
-        Base class for all record types. Do not use directly.
-
-        :param name: Record name (str)
-        :param desc: Description (str)
-        :param kwargs: additional keyword arguments
-        """
         kwargs.update(name=name, desc=desc)
         kw = {k: v for k, v in kwargs.items() if v is not None}
         self.options = {}
@@ -91,6 +92,15 @@ class Record(object, metaclass=RecordType):
 
 
 class Enum(Record):
+    """
+    Enum record type
+
+    :param name: Record name (str)
+    :param choices: list/tuple of strings corresponding to the choice names, values will be 0-index integers
+    :param default: default value of the record, 0 by default
+    :param kwargs: Extra keyword arguments
+    """
+
     required = ['choices']
     record = 'mbbo'
     fields = {
@@ -99,14 +109,6 @@ class Enum(Record):
     }
 
     def __init__(self, name, choices=None, out='', default=0, **kwargs):
-        """
-        Enum record type
-
-        :param name: Record name (str)
-        :param choices: list/tuple of strings corresponding to the choice names, values will be 0-index integers
-        :param default: default value of the record, 0 by default
-        :param kwargs: Extra keyword arguments
-        """
         kwargs.update(choices=choices, out=out, default=default)
         super(Enum, self).__init__(name, **kwargs)
         if isinstance(self.options['choices'], EnumMeta):
@@ -123,6 +125,16 @@ class Enum(Record):
 
 
 class BinaryOutput(Record):
+    """
+    Binary record type for converting between integers and bits
+
+    :param name: Record name (str)
+    :param default: default value of the record, 0 by default
+    :param out: output link
+    :param shift: shift value by this number of bits to the right
+    :param kwargs: Extra keyword arguments
+    """
+
     record = 'mbboDirect'
     fields = {
         'VAL': '{default}',
@@ -131,20 +143,21 @@ class BinaryOutput(Record):
     }
 
     def __init__(self, name, default=0, out='', shift=0, **kwargs):
-        """
-        Binary record type for converting between integers and bits
 
-        :param name: Record name (str)
-        :param default: default value of the record, 0 by default
-        :param out: output link
-        :param shift: shift value by this number of bits to the right
-        :param kwargs: Extra keyword arguments
-        """
         kwargs.update(default=default, out=out, shift=shift)
         super(BinaryOutput, self).__init__(name, **kwargs)
 
 
 class BinaryInput(Record):
+    """
+    Binary record type for converting between integers and bits
+
+    :param name: Record name (str)
+    :param inp: Input link
+    :param shift: shift value by this number of bits to the right
+    :param default: default value of the record, 0 by default
+    :param kwargs: Extra keyword arguments
+    """
     record = 'mbbiDirect'
     fields = {
         'VAL': '{default}',
@@ -153,20 +166,20 @@ class BinaryInput(Record):
     }
 
     def __init__(self, name, default=0, inp='', shift=0, **kwargs):
-        """
-        Binary record type for converting between integers and bits
-
-        :param name: Record name (str)
-        :param inp: Input link
-        :param shift: shift value by this number of bits to the right
-        :param default: default value of the record, 0 by default
-        :param kwargs: Extra keyword arguments
-        """
         kwargs.update(default=default, inp=inp, shift=shift)
         super(BinaryInput, self).__init__(name, **kwargs)
 
 
 class Toggle(Record):
+    """
+    Toggle field corresponding to a binary out record.
+
+    :param name: Record name (str)
+    :param high: Duration to keep high before returning to zero
+    :param zname: string value when zero
+    :param oname: string value when high
+    :param kwargs: Extra keyword arguments
+    """
     record = 'bo'
     fields = {
         'ZNAM': '{zname}',
@@ -175,15 +188,6 @@ class Toggle(Record):
     }
 
     def __init__(self, name, high=0.25, zname=None, oname=None, **kwargs):
-        """
-        Toggle field corresponding to a binary out record.
-
-        :param name: Record name (str)
-        :param high: Duration to keep high before returning to zero
-        :param zname: string value when zero
-        :param oname: string value when high
-        :param kwargs: Extra keyword arguments
-        """
         zname = kwargs['desc'] if not zname else zname
         oname = kwargs['desc'] if not oname else oname
         kwargs.update(high=high, zname=zname, oname=oname)
@@ -191,6 +195,15 @@ class Toggle(Record):
 
 
 class String(Record):
+    """
+    String record. Uses standard string record, or character array depending on length
+
+    :param name: Record name (str)
+    :param max_length: maximum number of characters expected. A different EPICS record will be used for fields bigger than 40 characters.
+    :param default:  default value, empty string by default
+    :param kwargs: Extra keyword arguments
+    """
+
     required = ['max_length']
     record = 'stringout'
     fields = {
@@ -198,14 +211,6 @@ class String(Record):
     }
 
     def __init__(self, name, max_length=20, default=' ', **kwargs):
-        """
-        String record. Uses standard string record, or character array depending on length
-
-        :param name: Record name (str)
-        :param max_length: maximum number of characters expected
-        :param default:  default value, empty string by default
-        :param kwargs: Extra keyword arguments
-        """
         kwargs.update(max_length=max_length, default=default)
         super(String, self).__init__(name, **kwargs)
         if self.options['max_length'] > 40:
@@ -216,6 +221,16 @@ class String(Record):
 
 
 class Integer(Record):
+    """
+    Integer Record.
+
+    :param name: Record Name.
+    :param max_val: Maximum value permitted (int), default (no limit)
+    :param min_val: Minimum value permitted (int), default (no limit)
+    :param default: default value, default (0)
+    :param units:  engineering units (str), default empty string
+    :param kwargs: Extra keyword arguments
+    """
     record = 'longout'
     required = ['units']
     fields = {
@@ -228,21 +243,23 @@ class Integer(Record):
     }
 
     def __init__(self, name, max_val=0, min_val=0, default=0, units='', **kwargs):
-        """
-        Integer Record.
-
-        :param name: Record Name.
-        :param max_val: Maximum value permitted (int), default (no limit)
-        :param min_val: Minimum value permitted (int), default (no limit)
-        :param default: default value, default (0)
-        :param units:  engineering units (str), default empty string
-        :param kwargs: Extra keyword arguments
-        """
         kwargs.update(max_val=max_val, min_val=min_val, default=default, units=units)
         super(Integer, self).__init__(name, **kwargs)
 
 
 class Float(Record):
+    """
+    Float Record.
+
+    :param name: Record Name.
+    :param max_val: Maximum value permitted (float), default (no limit)
+    :param min_val: Minimum value permitted (float), default (no limit)
+    :param default: default value, default (0.0)
+    :param prec: number of decimal places, default (4)
+    :param units:  engineering units (str), default empty string
+    :param kwargs: Extra keyword arguments
+    """
+
     record = 'ao'
     required = ['units']
     fields = {
@@ -256,22 +273,20 @@ class Float(Record):
     }
 
     def __init__(self, name, max_val=0, min_val=0, default=0.0, prec=4, units='', **kwargs):
-        """
-        Float Record.
-
-        :param name: Record Name.
-        :param max_val: Maximum value permitted (float), default (no limit)
-        :param min_val: Minimum value permitted (float), default (no limit)
-        :param default: default value, default (0.0)
-        :param prec: number of decimal places, default (4)
-        :param units:  engineering units (str), default empty string
-        :param kwargs: Extra keyword arguments
-        """
         kwargs.update(max_val=max_val, min_val=min_val, default=default, prec=prec, units=units)
         super(Float, self).__init__(name, **kwargs)
 
 
 class Calc(Record):
+    """
+    Calc Record
+
+    :param name: Record name
+    :param scan: scan parameter, default (0 ie passive)
+    :param prec: number of decimal places, default (4)
+    :param kwargs: Extra keyword arguments
+    """
+
     record = 'calc'
     required = ['calc']
     defaults = {
@@ -285,14 +300,6 @@ class Calc(Record):
     }
 
     def __init__(self, name, scan=0, prec=4, **kwargs):
-        """
-        Calc Record
-
-        :param name: Record name
-        :param scan: scan parameter, default (0 ie passive)
-        :param prec: number of decimal places, default (4)
-        :param kwargs: Extra keyword arguments
-        """
         kwargs.update(scan=scan, prec=prec)
         super(Calc, self).__init__(name, **kwargs)
         for c in 'ABCDEFGHIJKL':
@@ -302,6 +309,14 @@ class Calc(Record):
 
 
 class CalcOut(Calc):
+    """
+    CalcOutput Record
+
+    :param name: Record name
+    :param out: Output record
+    :param kwargs: Extra keyword arguments, supports Calc kwargs also.
+    """
+
     record = 'calcout'
     fields = {
         'OOPT': '{oopt}',
@@ -310,18 +325,19 @@ class CalcOut(Calc):
     }
 
     def __init__(self, name, out='', oopt=0, dopt=0, **kwargs):
-        """
-        CalcOutput Record
-
-        :param name: Record name
-        :param out: Output record
-        :param kwargs: Extra keyword arguments, supports Calc kwargs also.
-        """
         kwargs.update(out=out, oopt=oopt, dopt=dopt)
         super(CalcOut, self).__init__(name, **kwargs)
 
 
 class Array(Record):
+    """
+    Array Record.
+
+    :param name: Record Name
+    :param type: Element type (str or python type), supported types are ['STRING', 'SHORT', 'FLOAT', int, str, float]
+    :param length: Number of elements in the array
+    :param kwargs: Extra kwargs
+    """
     record = 'waveform'
     required = ['type', 'length']
     fields = {
@@ -330,14 +346,6 @@ class Array(Record):
     }
 
     def __init__(self, name, type=int, length=None, **kwargs):
-        """
-        Array Record.
-
-        :param name: Record Name
-        :param type: Element type (str or python type), supported types are ['STRING', 'SHORT', 'FLOAT', int, str, float]
-        :param length: Number of elements in the array
-        :param kwargs: Extra kwargs
-        """
         kwargs.update(type=type, length=length)
         super(Array, self).__init__(name, **kwargs)
         element_type = self.options['type']
@@ -386,30 +394,30 @@ def run_softioc(args, stdin_id, stdout_id):
 
 
 class Model(object, metaclass=ModelType):
+    """
+    IOC Database Model
+
+    :param device_name:  Root Name of device this will be available as the $(device) macro within the model
+    :param callbacks: Callback handler which provides callback methods for handling events and commands
+    :param command: The softIoc command to execute. By default this is 'softIoc' from EPICS base.
+    :param macros: additional macros to be used in the database as a dictionary
+
+    Process Variable records will be named *<device_name>:<record_name>*.
+
+    If Callback Handler is not provided, it is assumed that all callbacks are defined within the model itself.
+    The expected callback methods must follow the signature:
+
+    .. code-block:: python
+
+        def do_<record_name>(self, pv, value, ioc):
+            ...
+
+    which accepts the active record (pv), the changed value (value) and the ioc instance (ioc). If the Model
+    is also the callbacks provider, self, and ioc are identical, otherwise ioc is a reference to the database
+    model on which the record resides.
+    """
 
     def __init__(self, device_name, callbacks=None, command='softIoc', macros=None):
-        """
-        IOC Database Model
-
-        :param device_name:  Root Name of device this will be available as the $(device) macro within the model
-        :param callbacks: Callback handler which provides callback methods for handling events and commands
-        :param command: The softIoc command to execute. By default this is 'softIoc' from EPICS base.
-        :param macros: additional macros to be used in the database as a dictionary
-
-        Process Variable records will be named *<device_name>:<record_name>*.
-
-        If Callback Handler is not provided, it is assumed that all callbacks are defined within the model itself.
-        The expected callback methods must follow the signature:
-
-        .. code-block:: python
-
-            def do_<record_name>(self, pv, value, ioc):
-                ...
-
-        which accepts the active record (pv), the changed value (value) and the ioc instance (ioc). If the Model
-        is also the callbacks provider, self, and ioc are identical, otherwise ioc is a reference to the database
-        model on which the record resides.
-        """
         self.device_name = device_name
         self.callbacks = callbacks or self
         self.ioc_process = None
