@@ -69,6 +69,6 @@ html_show_sphinx = False
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['static']
-html_style = 'styles.css'
+html_style = 'css/styles.css'
 
 napoleon_custom_sections = ['signals', 'properties', 'attributes']

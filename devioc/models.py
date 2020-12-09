@@ -41,8 +41,8 @@ class Record(object, metaclass=RecordType):
     Base class for all record types. Do not use directly.
 
     :param name: Record name (str)
-    :param desc: Description (str)
-    :param kwargs: additional keyword arguments
+    :keyword desc: Description (str). Sets the DESC field
+    :keyword *: additional keyword arguments
     """
 
     required = ['name', 'desc']
@@ -96,9 +96,9 @@ class Enum(Record):
     Enum record type
 
     :param name: Record name (str)
-    :param choices: list/tuple of strings corresponding to the choice names, values will be 0-index integers
-    :param default: default value of the record, 0 by default
-    :param kwargs: Extra keyword arguments
+    :keyword choices: list/tuple of strings corresponding to the choice names, values will be 0-index integers.
+    :keyword default: default value of the record, 0 by default. Sets the VAL field
+    :keyword *: Extra keyword arguments
     """
 
     required = ['choices']
@@ -129,10 +129,10 @@ class BinaryOutput(Record):
     Binary record type for converting between integers and bits
 
     :param name: Record name (str)
-    :param default: default value of the record, 0 by default
-    :param out: output link
-    :param shift: shift value by this number of bits to the right
-    :param kwargs: Extra keyword arguments
+    :keyword out: Output link specification. Sets the OUT field
+    :keyword shift: shift value by this number of bits to the right. Sets the SHFT field
+    :keyword default: default value of the record, 0 by default. Sets the VAL field
+    :keyword *: Extra keyword arguments
     """
 
     record = 'mbboDirect'
@@ -153,10 +153,10 @@ class BinaryInput(Record):
     Binary record type for converting between integers and bits
 
     :param name: Record name (str)
-    :param inp: Input link
-    :param shift: shift value by this number of bits to the right
-    :param default: default value of the record, 0 by default
-    :param kwargs: Extra keyword arguments
+    :keyword inp: Input link. Sets the INP field
+    :keyword shift: shift value by this number of bits to the right. Sets the SHFT field
+    :keyword default: default value of the record, 0 by default. Sets the VAL field
+    :keyword *: Extra keyword arguments
     """
     record = 'mbbiDirect'
     fields = {
@@ -175,10 +175,10 @@ class Toggle(Record):
     Toggle field corresponding to a binary out record.
 
     :param name: Record name (str)
-    :param high: Duration to keep high before returning to zero
-    :param zname: string value when zero
-    :param oname: string value when high
-    :param kwargs: Extra keyword arguments
+    :keyword high: Duration to keep high before returning to zero. Sets the HIGH field.
+    :keyword zname: string value when zero. Sets the ZNAM field
+    :keyword oname: string value when high. Sets the ONAM field
+    :keyword *: Extra keyword arguments
     """
     record = 'bo'
     fields = {
@@ -199,9 +199,11 @@ class String(Record):
     String record. Uses standard string record, or character array depending on length
 
     :param name: Record name (str)
-    :param max_length: maximum number of characters expected. A different EPICS record will be used for fields bigger than 40 characters.
-    :param default:  default value, empty string by default
-    :param kwargs: Extra keyword arguments
+    :keyword max_length:
+        maximum number of characters expected. Char Array records will be used for fields bigger than 40 characters, in
+        which case the NELM and FTVL field will be set.
+    :keyword default:  default value, empty string by default
+    :keyword *: Extra keyword arguments
     """
 
     required = ['max_length']
@@ -225,11 +227,11 @@ class Integer(Record):
     Integer Record.
 
     :param name: Record Name.
-    :param max_val: Maximum value permitted (int), default (no limit)
-    :param min_val: Minimum value permitted (int), default (no limit)
-    :param default: default value, default (0)
-    :param units:  engineering units (str), default empty string
-    :param kwargs: Extra keyword arguments
+    :keyword max_val: Maximum value permitted (float), default (no limit). Sets the DRVH and HOPR fields
+    :keyword min_val: Minimum value permitted (float), default (no limit). Sets the DRVL and LOPR fields
+    :keyword default: default value, default (0.0). Sets the VAL field
+    :keyword units:  engineering units (str), default empty string. Sets the EGU field
+    :keyword *: Extra keyword arguments
     """
     record = 'longout'
     required = ['units']
@@ -252,12 +254,12 @@ class Float(Record):
     Float Record.
 
     :param name: Record Name.
-    :param max_val: Maximum value permitted (float), default (no limit)
-    :param min_val: Minimum value permitted (float), default (no limit)
-    :param default: default value, default (0.0)
-    :param prec: number of decimal places, default (4)
-    :param units:  engineering units (str), default empty string
-    :param kwargs: Extra keyword arguments
+    :keyword max_val: Maximum value permitted (float), default (no limit). Sets the DRVH and HOPR fields
+    :keyword min_val: Minimum value permitted (float), default (no limit). Sets the DRVL and LOPR fields
+    :keyword default: default value, default (0.0). Sets the VAL field
+    :keyword prec: number of decimal places, default (4). Sets the PREC field
+    :keyword units:  engineering units (str), default empty string. Sets the EGU field
+    :keyword *: Extra keyword arguments
     """
 
     record = 'ao'
@@ -282,9 +284,11 @@ class Calc(Record):
     Calc Record
 
     :param name: Record name
-    :param scan: scan parameter, default (0 ie passive)
-    :param prec: number of decimal places, default (4)
-    :param kwargs: Extra keyword arguments
+    :keyword scan: scan parameter, default (0 ie passive). Sets the SCAN field
+    :keyword prec: number of decimal places, default (4). Sets the PREC field
+    :keyword calc: Calculation. Sets CALC field
+    :keyword inpa: Input A specification. Sets the INPA field
+    :keyword *: Extra keyword arguments. Any additional database fields required should be specified as lower-case kwargs.
     """
 
     record = 'calc'
@@ -313,8 +317,10 @@ class CalcOut(Calc):
     CalcOutput Record
 
     :param name: Record name
-    :param out: Output record
-    :param kwargs: Extra keyword arguments, supports Calc kwargs also.
+    :keyword out: OUT Output specification
+    :keyword oopt: OOPT Output Execute field
+    :keyword dopt: DOPT Output Data field
+    :keyword *: Extra keyword arguments, supports Calc kwargs also.
     """
 
     record = 'calcout'
