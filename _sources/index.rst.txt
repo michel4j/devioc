@@ -27,7 +27,7 @@ Before you can use DevIOC, you'll need to install it and its dependencies.
 
 ::
 
-   $ pip3 install -r devioc
+   $ pip3 install devioc
 
 
 It is a pure python module, although it requires
