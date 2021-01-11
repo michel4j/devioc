@@ -10,7 +10,7 @@ def slugify(text):
     return re.sub(r'[^a-z0-9]+', '', str(text))
 
 
-RUNIOC_TMPL = """#!/usr/bin/python3
+RUNIOC_TMPL = """#!/usr/bin/env python3
 import os
 import logging
 import sys
@@ -21,8 +21,9 @@ from twisted.internet import gireactor
 gireactor.install()
 from twisted.internet import reactor
 
-# add the project to the python path and inport it
+# add the project to the python path and inport it. Comment this out if using setup.py install
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from devioc import log
 from {project_name} import ioc
 
@@ -202,8 +203,7 @@ from setuptools import setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-
-
+    
 setup(
     name='{project_name}',
     version="1.0.0",
