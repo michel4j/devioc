@@ -78,7 +78,7 @@ class {app_name}(object):
             ioc.number.put((ioc.number.get() + 1) % 3, wait=True)  # cycle through values
     
     def do_number(self, pv, value, ioc):
-        name = {0: 'Noll', 1: 'Ett', 2: 'Två'}.get(value, 'va?')
+        name = {{0: 'Noll', 1: 'Ett', 2: 'Två'}}.get(value, 'va?')
         print(f'New Enum Value: {{value}} {{name}}')
 
     def do_calc(self, pv, value, ioc):
