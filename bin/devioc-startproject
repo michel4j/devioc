@@ -36,7 +36,7 @@ parser.add_argument('-d', '--device', type=str, help='Device Name', required=Tru
 
 if __name__== '__main__':
     args = parser.parse_args()
-    if args.v:
+    if args.verbose:
         log.log_to_console(logging.DEBUG)
     else:
         log.log_to_console(logging.INFO)
