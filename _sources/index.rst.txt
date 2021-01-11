@@ -224,7 +224,7 @@ The above script is executed to start the application within the `devioc` virtua
 
 ::
 
-   (devioc) $ myioc/bin/app.sever --device MYIOC-001
+   (devioc) $ myioc/bin/app.server --device MYIOC-001
 
 
 Record Types
