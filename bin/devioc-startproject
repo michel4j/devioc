@@ -29,8 +29,8 @@ from {project_name} import ioc
 
 # Setup single argument for verbose logging
 parser = argparse.ArgumentParser(description='Run IOC Application')
-parser.add_argument('-v', action='store_true', help='Verbose Logging')
-parser.add_argument('--device', type=str, help='Device Name', required=True)
+parser.add_argument('-v', '--verbose', action='store_true', help='Verbose Logging')
+parser.add_argument('-d', '--device', type=str, help='Device Name', required=True)
    
 # Example of how to start your APP. Modify as needed
 
@@ -78,7 +78,13 @@ class {app_name}(object):
             ioc.number.put((ioc.number.get() + 1) % 3, wait=True)  # cycle through values
     
     def do_number(self, pv, value, ioc):
-        print('New Enum Value', value)
+        name = {0: 'Noll', 1: 'Ett', 2: 'Två'}.get(value, 'va?')
+        print(f'New Enum Value: {value} {name}')
+
+    def do_calc(self, pv, value, ioc):
+        A = ioc.intval.get()
+        B = ioc.floatval.get()
+        print(f'New Calc Result: {A} + {B} = {value}')
 
     def shutdown(self):
         # needed for proper IOC shutdown
