@@ -1,7 +1,7 @@
 import unittest
 import numpy
 
-from devioc import models, log
+from .. import models, log
 
 MAX_INTEGER = 12345
 MIN_INTEGER = -54321
