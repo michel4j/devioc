@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 from devioc.version import get_version
 
 with open("README.md", "r") as fh:
@@ -18,7 +18,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords='epics device ioc development',
-    packages=['devioc'],
+    packages=find_packages(),
     scripts=[
         'bin/devioc-startproject'
     ],
