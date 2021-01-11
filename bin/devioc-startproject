@@ -79,12 +79,12 @@ class {app_name}(object):
     
     def do_number(self, pv, value, ioc):
         name = {0: 'Noll', 1: 'Ett', 2: 'Två'}.get(value, 'va?')
-        print(f'New Enum Value: {value} {name}')
+        print(f'New Enum Value: {{value}} {{name}}')
 
     def do_calc(self, pv, value, ioc):
         A = ioc.intval.get()
         B = ioc.floatval.get()
-        print(f'New Calc Result: {A} + {B} = {value}')
+        print(f'New Calc Result: {{A}} + {{B}} = {{value}}')
 
     def shutdown(self):
         # needed for proper IOC shutdown
