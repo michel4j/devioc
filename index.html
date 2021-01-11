@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DevIOC - EPICS Soft Device Support With Python &mdash; DevIOC 2020.5.6 documentation</title>
+  <title>DevIOC - EPICS Soft Device Support With Python &mdash; DevIOC 2020.5.9 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                2020.5.6
+                2020.5.9
               </div>
             
           
@@ -172,8 +172,11 @@ protocols. It works!</p>
 </div>
 <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>Before you can use DevIOC, you’ll need to install it and its dependencies.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install devioc
+<p>Before you can use DevIOC, you’ll need to install it and its dependencies. We recommend installing it inside a virtual
+environment using the following commands on the shell</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m venv devioc
+$ source devioc/bin/activate
+(devioc) $ pip3 install devioc
 </pre></div>
 </div>
 <p>It is a pure python module, although it requires
@@ -249,6 +252,10 @@ using the macros keyword argument of the model. In practice, the best way to pas
 them command-line arguments of the application, and then forward them to the model through the application as
 keyword arguments.</p>
 </div>
+<p>This will create an IOC database with Process variable fields <strong>MYIOC-001:enum, MYIOC-001:toggle, …</strong> etc, where
+the process variable name is generated based on the model name, and the field name.  Once instanciated, the IOC is ready
+to be used and alive on the Channel Access network. However, for more responsive applications, it is recommended to
+to create an IOC Application as well.</p>
 <dl class="py class">
 <dt id="devioc.models.Model">
 <em class="property">class </em><code class="sig-prename descclassname">devioc.models.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span></em>, <em class="sig-param"><span class="n">callbacks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">command</span><span class="o">=</span><span class="default_value">'softIoc'</span></em>, <em class="sig-param"><span class="n">macros</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#devioc.models.Model" title="Permalink to this definition">¶</a></dt>
@@ -281,10 +288,6 @@ model on which the record resides.</p>
 
 </dd></dl>
 
-<p>This will create an IOC database with Process variable fields <strong>MYIOC-001:enum, MYIOC-001:toggle, …</strong> etc, where
-the process variable name is generated based on the model name, and the field name.  Once instanciated, the IOC is ready
-to be used and alive on the Channel Access network. However, for more responsive applications, it is recommended to
-to create an IOC Application as well.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#record-types">Record Types</a> for detailed documentation about database records.</p>
@@ -599,7 +602,7 @@ which case the NELM and FTVL field will be set.</p></li>
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2018-2020, Canadian Light Source, Inc
+        &copy; Copyright 2018-2021, Canadian Light Source, Inc
 
     </p>
   </div> 

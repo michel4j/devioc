@@ -23,11 +23,14 @@ protocols. It works!
 
 Getting Started
 ===============
-Before you can use DevIOC, you'll need to install it and its dependencies.
+Before you can use DevIOC, you'll need to install it and its dependencies. We recommend installing it inside a virtual
+environment using the following commands on the shell
 
 ::
 
-   $ pip3 install devioc
+    $ python -m venv devioc
+    $ source devioc/bin/activate
+    (devioc) $ pip3 install devioc
 
 
 It is a pure python module, although it requires
@@ -122,13 +125,14 @@ Once the model is defined, it can then be instanciated within the application. F
     keyword arguments.
 
 
-.. autoclass:: devioc.models.Model
-   :members:
-
 This will create an IOC database with Process variable fields **MYIOC-001:enum, MYIOC-001:toggle, ...** etc, where
 the process variable name is generated based on the model name, and the field name.  Once instanciated, the IOC is ready
 to be used and alive on the Channel Access network. However, for more responsive applications, it is recommended to
 to create an IOC Application as well.
+
+
+.. autoclass:: devioc.models.Model
+   :members:
 
 .. seealso:: `Record Types`_ for detailed documentation about database records.
 
