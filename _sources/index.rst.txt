@@ -45,7 +45,7 @@ dependencies are available.
 
 ::
 
-   $ python -m unittest -v test.test_ioc
+   (devioc) $ python -m unittest -v devioc.tests.test_ioc
 
 
 Write your first IOC
@@ -64,14 +64,15 @@ Your IOC application can be structured at will although we recommend the followi
        └── ioc.py       # IOC module containing your IOC application
 
 
-A program is included to create a default IOC project.
+A program is included to create a default IOC project. This can be run within the `devioc` virtual environment as follows
 
 ::
 
-   $ devioc-startproject myioc
+   (devioc) $ devioc-startproject myioc
 
-That will create a directory structure similar to the one listed above, except the `opi.client` file which you
-will have to create yourself based on your preferred EPICS display manager.
+This will create a directory structure similar to the one listed above, except the `opi.client` file which you
+will have to create yourself based on your preferred EPICS display manager. The project created as such is
+a fully functional example application that you can modify as needed.
 
 
 Creating the IOC Model
@@ -196,13 +197,13 @@ The script **bin/app.server** is responsible for running the IOC Application. An
 
    # Setup command line arguments
    parser = argparse.ArgumentParser(description='Run IOC Application')
-   parser.add_argument('-v', action='store_true', help='Verbose Logging')
+   parser.add_argument('--verbose', action='store_true', help='Verbose Logging')
    parser.add_argument('--device', type=str, help='Device Name', required=True)
 
 
    if __name__== '__main__':
        args = parser.parse_args()
-       if args.v:
+       if args.verbose:
            log.log_to_console(logging.DEBUG)
        else:
            log.log_to_console(logging.INFO)
@@ -218,6 +219,13 @@ The script **bin/app.server** is responsible for running the IOC Application. An
 
 
 This example uses the `Twisted <https://pypi.org/project/Twisted/>`_ framework. It is highly recommended to use it too.
+
+The above script is executed to start the application within the `devioc` virtual environment as follows:
+
+::
+
+   (devioc) $ myioc/bin/app.sever --device MYIOC-001
+
 
 Record Types
 ============
