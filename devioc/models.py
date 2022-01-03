@@ -265,10 +265,10 @@ class Float(Record):
     record = 'ao'
     required = ['units']
     fields = {
-        'DRVL': '{max_val:0.4e}',
-        'DRVH': '{min_val:0.4e}',
-        'LOPR': '{max_val:0.4e}',
-        'HOPR': '{min_val:0.4e}',
+        'DRVH': '{max_val:0.4e}',
+        'DRVL': '{min_val:0.4e}',
+        'HOPR': '{max_val:0.4e}',
+        'LOPR': '{min_val:0.4e}',
         'PREC': '{prec}',
         'EGU': '{units}',
         'VAL': '{default}'

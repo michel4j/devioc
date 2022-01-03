@@ -11,14 +11,13 @@ tt, code, kbd, pre, samp, code {
 pre {
     white-space: pre-wrap;
     word-wrap: break-word;
-    padding: 1.5rem;
+    padding: 1rem;
 }
 
 .rst-content pre.literal-block, .rst-content div[class^="highlight"] pre, .rst-content .linenodiv pre {
-	font-size: 14px;
-    white-space: pre-wrap;
+	font-size: 13px;
     word-wrap: break-word;
-    padding: 1.5rem
+    padding: 1rem
 
 }
 
