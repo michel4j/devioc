@@ -267,7 +267,7 @@ def startproject(name):
         handle.write(RUNIOC_TMPL.format(project_name=name, app_name=app_name))
 
     with open(setup_file, 'w') as handle:
-        handle.write(SETUP_TMPL.format(project_name=name, app_name=app_name))
+        handle.write(SETUP_TMPL.format(project_name=name))
 
     with open(initd_file, 'w') as handle:
         handle.write(INIT_TMPL)
@@ -282,7 +282,7 @@ def startproject(name):
     ioc_file = os.path.join(ioc_dir, 'ioc.py')
     init_file = os.path.join(ioc_dir, '__init__.py')
     with open(ioc_file, 'w') as handle:
-        handle.write(IOC_TMPL.format(project_name=name, model_name=model_name, app_name=app_name))
+        handle.write(IOC_TMPL.format(model_name=model_name, app_name=app_name))
 
     with open(init_file, 'w') as handle:
         pass
