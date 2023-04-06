@@ -7,7 +7,7 @@ import subprocess
 import sys
 import time
 from enum import EnumMeta
-
+from pathlib import Path
 import gepics
 
 from collections.abc import Iterable
@@ -429,8 +429,9 @@ class Model(object, metaclass=ModelType):
             self.macros.update(**macros)
         self.command = command
         self.ready = False
-        self.db_cache_dir = os.path.join(os.path.join(os.getcwd(), '__dbcache__'))
-        self.directory = os.getcwd()
+        self.directory = Path(os.getcwd())
+        self.connections = {}
+        self.db_cache_dir = self.directory / '__dbcache__'
         self._startup()
         self._setup()
 
@@ -438,19 +439,21 @@ class Model(object, metaclass=ModelType):
         """
         Generate the database and start the IOC application in a separate process
         """
-        if not os.path.exists(self.db_cache_dir):
-            os.mkdir(self.db_cache_dir)
+        if not self.db_cache_dir.exists():
+            self.db_cache_dir.mkdir(parents=True, exist_ok=True)
+
         db_name = self.__class__.__name__
-        with open(os.path.join(self.db_cache_dir, '{}.db'.format(db_name)), 'w') as db_file:
+        with open(self.db_cache_dir / f'{db_name}.db', 'w') as db_file:
             for k, v in self._fields.items():
                 db_file.write(str(v))
 
-        with open(os.path.join(self.db_cache_dir, '{}.cmd'.format(db_name)), 'w') as cmd_file:
+        with open(self.db_cache_dir/ f'{db_name}.cmd', 'w') as cmd_file:
             macro_text = ','.join(['{}={}'.format(k,v) for k,v in self.macros.items()])
-
             cmd_file.write(CMD_TEMPLATE.format(macros=macro_text, db_name=db_name))
+            
         os.chdir(self.db_cache_dir)
-        args = [self.command, '{}.cmd'.format(db_name)]
+        args = [self.command, f'{db_name}.cmd']
+        
         self.ioc_process = multiprocessing.Process(
             target=run_softioc,
             args=(args, sys.stdin.fileno(), sys.stdout.fileno()),
@@ -462,15 +465,18 @@ class Model(object, metaclass=ModelType):
         """
         Shutdown the ioc application
         """
+
         self.ioc_process.terminate()
         subprocess.check_call('reset', shell=True)
         shutil.rmtree(self.db_cache_dir)
+        self.ioc_process.join()
 
-    def connect_callbacks(self, pv, active, name):
+    def connect_callbacks(self, pv, value, name):
         callback = getattr(self.callbacks, name, None)
-        print(active, callback, pv)
-        if active and callback:
-            pv.connect('change', callback)
+        pv.disconnect('changed')
+        if callback:
+            pv.connect('changed', callback, self)
+            print('connecting ...', name)
 
     def _setup(self):
         """
@@ -479,10 +485,12 @@ class Model(object, metaclass=ModelType):
         pending = set()
         for k, f in self._fields.items():
             pv_name = '{}:{}'.format(self.device_name, f.options['name'])
-            callback = 'do_{}'.format(k).lower()
+            callback_name = 'do_{}'.format(k).lower()
             pv = gepics.PV(pv_name)
-            pv.connect('active', self.connect_callbacks, callback)
             setattr(self, k, pv)
+            callback = getattr(self.callbacks, callback_name, None)
+            if callback:
+                pv.connect('changed', callback)
             pending.add(pv)
 
         # wait for all PVs to connect

@@ -1,6 +1,6 @@
 import unittest
 import numpy
-import time
+import atexit
 
 from devioc import models, log
 
@@ -15,22 +15,27 @@ DEVICE_NAME = 'TEST001'
 class TestIOC(models.Model):
     enum = models.Enum('enum', choices=['ZERO', 'ONE', 'TWO'], default=0, desc='Enum Test')
     toggle = models.Toggle('toggle', zname='ON', oname='OFF', desc='Toggle Test')
-    target = models.Integer('target', max_val=10, min_val=-10, default=0, desc='Target Test')
+    target = models.Integer('target', default=0, desc='Target Test')
     sstring = models.String('sstring', max_length=20, desc='Short String Test')
     lstring = models.String('lstring', max_length=512, desc='Long String Test')
-    intval = models.Integer(
-        'intval', max_val=MAX_INTEGER, min_val=MIN_INTEGER, default=0, desc='Int Test'
-    )
-    floatval = models.Float(
-        'floatval', max_val=MAX_INTEGER, min_val=MIN_INTEGER, default=0.0, desc='Float Test'
-    )
+    intval = models.Integer('intval', max_val=MAX_INTEGER, min_val=MIN_INTEGER, default=0, desc='Int Test')
+    floatval = models.Float('floatval', max_val=MAX_INTEGER, min_val=MIN_INTEGER, default=0.0, desc='Float Test')
     floatout = models.Float('floatout', desc='Test Float Output')
     intarray = models.Array('intarray', type=int, length=ARRAY_SIZE, desc='Int Array Test')
     floatarray = models.Array('floatarray', type=float, length=ARRAY_SIZE, desc='Float Array Test')
     strarray = models.Array('strarray', type=str, length=ARRAY_SIZE, desc='String Array Test')
-    calc = models.Calc('calc', calc='A+B', inpa='$(device):intval CP NMS', inpb='$(device):floatval CP NMS', desc='Calc Test')
+    calc = models.Calc(
+        'calc',
+        calc='A+B',
+        inpa='$(device):intval CP NMS',
+        inpb='$(device):floatval CP NMS',
+        desc='Calc Test'
+    )
     calcout = models.CalcOut(
-        'calcout', calc='A+B', prec=4, inpa='$(device):intval CP NMS', inpb='$(device):floatval CP NMS', out='$(device):floatout NP',
+        'calcout',
+        calc='A+B',
+        inpa='$(device):intval CP NMS',
+        inpb='$(device):floatval CP NMS', out='$(device):floatout NP',
         desc='CalcOut Test'
     )
 
@@ -42,7 +47,6 @@ class IOCManager(object):
         self.ioc = TestIOC(DEVICE_NAME, callbacks=self)
 
     def do_toggle(self, pv, value, ioc):
-        print(pv, value, ioc)
         self.ioc.target.put(self.ioc.target.get() + 1, wait=True)
 
 
@@ -55,6 +59,7 @@ class IOCTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        print("Cleaning up ...")
         cls.ioc.shutdown()
 
     def test_enum(self):
@@ -73,7 +78,6 @@ class IOCTestCase(unittest.TestCase):
         val = 'devioc is cool, this is a very long string which should not fit in the small space of a regular string'
         pv = self.ioc.lstring
         pv.put(val, wait=True)
-        print(val, pv.get())
         self.assertEqual(val, pv.get(), 'Put Failed: Values do not match: {} vs {}'.format(val, pv.get()))
 
     def test_integer(self):
@@ -112,9 +116,8 @@ class IOCTestCase(unittest.TestCase):
         self.assertAlmostEqual(out2, expected, 6, f'Calculated Vaues "{A.get()}+{B.get()}" do not match: {out2} vs {expected}')
 
     def test_toggle(self):
-        self.assertEqual(0, self.ioc.target.get(), 'Toggle Target Failed: Values do not match')
+        self.ioc.toggle.put(1, wait=True)
+
+        self.assertEqual(1, self.ioc.target.get(), 'Toggle Target Failed: Values do not match')
 
 
-if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(IOCTestCase)
-    unittest.TextTestRunner(verbosity=2).run(suite)
