@@ -490,7 +490,7 @@ class Model(object, metaclass=ModelType):
             setattr(self, k, pv)
             callback = getattr(self.callbacks, callback_name, None)
             if callback:
-                pv.connect('changed', callback)
+                pv.connect('changed', callback, self)
             pending.add(pv)
 
         # wait for all PVs to connect
