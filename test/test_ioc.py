@@ -1,7 +1,7 @@
 import unittest
 import numpy
 
-from .. import models, log
+from devioc import models, log
 
 MAX_INTEGER = 12345
 MIN_INTEGER = -54321
@@ -28,7 +28,7 @@ class TestIOC(models.Model):
     strarray = models.Array('strarray', type=str, length=ARRAY_SIZE, desc='String Array Test')
     calc = models.Calc('calc', calc='A+B', inpa='$(device):intval CP NMS', inpb='$(device):floatval CP NMS', desc='Calc Test')
     calcout = models.CalcOut(
-        'calcout', calc='A+B', inpa='$(device):intval CP NMS', inpb='$(device):floatval CP NMS', out='$(device):floatout NP',
+        'calcout', calc='A+B', prec=4, inpa='$(device):intval CP NMS', inpb='$(device):floatval CP NMS', out='$(device):floatout NP',
         desc='CalcOut Test'
     )
 
@@ -103,7 +103,7 @@ class IOCTestCase(unittest.TestCase):
         B.put(DEFAULT_FLOAT, wait=True)
         out2 = calc.get()
         expected = DEFAULT_FLOAT + DEFAULT_INTEGER
-        self.assertAlmostEqual(out2, expected, 6, 'Calculated Vaues do not match: {} vs {}'.format(out2, expected))
+        self.assertAlmostEqual(out2, expected, 6, f'Calculated Vaues "{A.get()}+{B.get()}" do not match: {out2} vs {expected}')
 
 
 if __name__ == '__main__':

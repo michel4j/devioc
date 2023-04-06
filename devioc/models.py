@@ -10,6 +10,7 @@ from enum import EnumMeta
 
 import gepics
 
+from collections.abc import Iterable
 from . import log
 
 ENUM_KEYS = [
@@ -114,7 +115,7 @@ class Enum(Record):
         super(Enum, self).__init__(name, **kwargs)
         if isinstance(self.options['choices'], EnumMeta):
             choice_pairs = [(e.name, e.value) for e in self.options['choices']]
-        elif isinstance(self.options['choices'], collections.Iterable):
+        elif isinstance(self.options['choices'], Iterable):
             choice_pairs = [(c, i) for i, c in enumerate(self.options['choices'])]
         else:
             choice_pairs = []
@@ -294,17 +295,13 @@ class Calc(Record):
 
     record = 'calc'
     required = ['calc']
-    defaults = {
-        'scan': 0,
-        'prec': 4,
-    }
     fields = {
         'CALC': '{calc}',
         'SCAN': '{scan}',
         'PREC': '{prec}',
     }
 
-    def __init__(self, name, scan=0, prec=4, **kwargs):
+    def __init__(self, name, scan=0, prec=4, calc='', **kwargs):
         kwargs.update(scan=scan, prec=prec)
         super(Calc, self).__init__(name, **kwargs)
         for c in 'ABCDEFGHIJKL':
@@ -332,7 +329,7 @@ class CalcOut(Calc):
     }
 
     def __init__(self, name, out='', oopt=0, dopt=0, **kwargs):
-        kwargs.update(out=out, oopt=oopt, dopt=dopt)
+        kwargs.update(out=out, oopt=oopt, dopt=dopt, prec=prec, scan=scan)
         super(CalcOut, self).__init__(name, **kwargs)
 
 
