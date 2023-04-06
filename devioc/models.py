@@ -17,6 +17,7 @@ ENUM_KEYS = [
     'EI', 'NI', 'TE', 'EL', 'TV', 'TT', 'FT', 'FF'
 ]
 
+
 logger = log.get_module_logger(__name__)
 
 
@@ -472,23 +473,27 @@ class Model(object, metaclass=ModelType):
 
     def _setup(self):
         """
-        Set up the ioc records an connect all callbacks
+        Set up the ioc records and connect all callbacks
         """
-        pending = set()
+        pending = {}
         for k, f in self._fields.items():
             pv_name = '{}:{}'.format(self.device_name, f.options['name'])
             pv = gepics.PV(pv_name)
-            pending.add(pv)
             setattr(self, k, pv)
             callback = 'do_{}'.format(k).lower()
             if hasattr(self.callbacks, callback):
-                pv.connect('changed', getattr(self.callbacks, callback), self)
+                pending[pv] = getattr(self.callbacks, callback)
+            else:
+                pending[pv] = None
 
         # wait 10 seconds for all PVs to connect
         timeout = 5
         while pending and timeout > 0:
             time.sleep(0.05)
             timeout -= 0.05
-            pending = {pv for pv in pending if not pv.is_active()}
-
+            for pv, callback in list(pending.items()):
+                if pv.is_active():
+                    if callback:
+                        pv.connect('changed', callback, self)
+                    pending.pop(pv)
         print('')
