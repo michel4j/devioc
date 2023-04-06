@@ -1,5 +1,6 @@
 import unittest
 import numpy
+import time
 
 from devioc import models, log
 
@@ -14,6 +15,7 @@ DEVICE_NAME = 'TEST001'
 class TestIOC(models.Model):
     enum = models.Enum('enum', choices=['ZERO', 'ONE', 'TWO'], default=0, desc='Enum Test')
     toggle = models.Toggle('toggle', zname='ON', oname='OFF', desc='Toggle Test')
+    target = models.Integer('target', max_val=10, min_val=-10, default=0, desc='Target Test')
     sstring = models.String('sstring', max_length=20, desc='Short String Test')
     lstring = models.String('lstring', max_length=512, desc='Long String Test')
     intval = models.Integer(
@@ -38,6 +40,10 @@ class IOCManager(object):
     def __init__(self):
         log.log_to_console()
         self.ioc = TestIOC(DEVICE_NAME, callbacks=self)
+
+    def do_toggle(self, pv, value, ioc):
+        print(pv, value, ioc)
+        self.ioc.target.put(self.ioc.target.get() + 1, wait=True)
 
 
 class IOCTestCase(unittest.TestCase):
@@ -104,6 +110,9 @@ class IOCTestCase(unittest.TestCase):
         out2 = calc.get()
         expected = DEFAULT_FLOAT + DEFAULT_INTEGER
         self.assertAlmostEqual(out2, expected, 6, f'Calculated Vaues "{A.get()}+{B.get()}" do not match: {out2} vs {expected}')
+
+    def test_toggle(self):
+        self.assertEqual(0, self.ioc.target.get(), 'Toggle Target Failed: Values do not match')
 
 
 if __name__ == '__main__':

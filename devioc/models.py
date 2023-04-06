@@ -62,8 +62,7 @@ class Record(object, metaclass=RecordType):
         self.instance_fields = {}
         self.instance_fields.update(self.fields)
         missing_args = set(self.required) - set(self.options.keys())
-        assert not missing_args, '{}: Missing required kwargs: "{}"'.format(self.__class__.__name__,
-                                                                            ', '.join(missing_args))
+        assert not missing_args, f'{self.__class__.__name__}: Missing required kwargs: "{", ".join(missing_args)}"'
 
     def __str__(self):
         template = '\n'.join(
@@ -302,7 +301,7 @@ class Calc(Record):
     }
 
     def __init__(self, name, scan=0, prec=4, calc='', **kwargs):
-        kwargs.update(scan=scan, prec=prec)
+        kwargs.update(scan=scan, prec=prec, calc=calc)
         super(Calc, self).__init__(name, **kwargs)
         for c in 'ABCDEFGHIJKL':
             key = 'INP{}'.format(c)
@@ -329,7 +328,7 @@ class CalcOut(Calc):
     }
 
     def __init__(self, name, out='', oopt=0, dopt=0, **kwargs):
-        kwargs.update(out=out, oopt=oopt, dopt=dopt, prec=prec, scan=scan)
+        kwargs.update(out=out, oopt=oopt, dopt=dopt)
         super(CalcOut, self).__init__(name, **kwargs)
 
 
@@ -449,7 +448,6 @@ class Model(object, metaclass=ModelType):
         with open(os.path.join(self.db_cache_dir, '{}.cmd'.format(db_name)), 'w') as cmd_file:
             macro_text = ','.join(['{}={}'.format(k,v) for k,v in self.macros.items()])
 
-
             cmd_file.write(CMD_TEMPLATE.format(macros=macro_text, db_name=db_name))
         os.chdir(self.db_cache_dir)
         args = [self.command, '{}.cmd'.format(db_name)]
@@ -468,29 +466,30 @@ class Model(object, metaclass=ModelType):
         subprocess.check_call('reset', shell=True)
         shutil.rmtree(self.db_cache_dir)
 
+    def connect_callbacks(self, pv, active, name):
+        callback = getattr(self.callbacks, name, None)
+        print(active, callback, pv)
+        if active and callback:
+            pv.connect('change', callback)
+
     def _setup(self):
         """
         Set up the ioc records and connect all callbacks
         """
-        pending = {}
+        pending = set()
         for k, f in self._fields.items():
             pv_name = '{}:{}'.format(self.device_name, f.options['name'])
-            pv = gepics.PV(pv_name)
-            setattr(self, k, pv)
             callback = 'do_{}'.format(k).lower()
-            if hasattr(self.callbacks, callback):
-                pending[pv] = getattr(self.callbacks, callback)
-            else:
-                pending[pv] = None
+            pv = gepics.PV(pv_name)
+            pv.connect('active', self.connect_callbacks, callback)
+            setattr(self, k, pv)
+            pending.add(pv)
 
-        # wait 10 seconds for all PVs to connect
-        timeout = 5
-        while pending and timeout > 0:
-            time.sleep(0.05)
-            timeout -= 0.05
-            for pv, callback in list(pending.items()):
-                if pv.is_active():
-                    if callback:
-                        pv.connect('changed', callback, self)
-                    pending.pop(pv)
+        # wait for all PVs to connect
+        timeout = time.time() + 5
+        while pending and time.time() < timeout:
+            time.sleep(0.025)
+            pending = {pv for pv in pending if not pv.is_active()}
+
+        self.ready = True
         print('')
