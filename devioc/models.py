@@ -113,7 +113,7 @@ class Enum(Record):
         kwargs.update(choices=choices, out=out, default=default)
         super(Enum, self).__init__(name, **kwargs)
         if isinstance(self.options['choices'], EnumMeta):
-            choice_pairs = [(e.name, e.value) for e in self.options['choices']]
+            choice_pairs = [(e.name.replace('_', ' '), e.value) for e in self.options['choices']]
         elif isinstance(self.options['choices'], Iterable):
             choice_pairs = [(c, i) for i, c in enumerate(self.options['choices'])]
         else:
