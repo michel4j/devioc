@@ -14,7 +14,7 @@ DEVICE_NAME = 'TEST001'
 
 class TestIOC(models.Model):
     enum = models.Enum('enum', choices=['ZERO', 'ONE', 'TWO'], default=0, desc='Enum Test')
-    toggle = models.Toggle('toggle', zname='ON', oname='OFF', desc='Toggle Test')
+    toggle = models.Toggle('toggle', zname='OFF', oname='ON', desc='Toggle Test', high=0)
     target = models.Integer('target', default=0, desc='Target Test')
     sstring = models.String('sstring', max_length=20, desc='Short String Test')
     lstring = models.String('lstring', max_length=512, desc='Long String Test')

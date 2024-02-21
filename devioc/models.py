@@ -1,4 +1,3 @@
-import collections
 import multiprocessing
 import os
 import platform
@@ -6,18 +5,18 @@ import shutil
 import subprocess
 import sys
 import time
+from collections.abc import Iterable
 from enum import EnumMeta
 from pathlib import Path
+
 import gepics
 
-from collections.abc import Iterable
 from . import log
 
 ENUM_KEYS = [
     'ZR', 'ON', 'TW', 'TH', 'FR', 'FV', 'SX', 'SV',
     'EI', 'NI', 'TE', 'EL', 'TV', 'TT', 'FT', 'FF'
 ]
-
 
 logger = log.get_module_logger(__name__)
 
@@ -26,9 +25,6 @@ class RecordType(type):
     """Record MetaClass"""
 
     def __new__(cls, name, bases, attrs):
-        # append required kwargs
-        attrs['required'] = getattr(bases[0], 'required', []) + attrs.get('required', [])
-
         # update fields
         fields = {}
         fields.update(getattr(bases[0], 'fields', {}))
@@ -47,22 +43,19 @@ class Record(object, metaclass=RecordType):
     :keyword *: additional keyword arguments
     """
 
-    required = ['name', 'desc']
     record = 'ai'
     fields = {
         'DESC': '{desc}',
     }
 
-    def __init__(self, name, desc=None, **kwargs):
-        kwargs.update(name=name, desc=desc)
+    def __init__(self, name, **kwargs):
+        kwargs.update(name=name, desc=kwargs.get("desc", "None"))
         kw = {k: v for k, v in kwargs.items() if v is not None}
         self.options = {}
         self.options.update(kw)
         self.options['record'] = self.record
         self.instance_fields = {}
         self.instance_fields.update(self.fields)
-        missing_args = set(self.required) - set(self.options.keys())
-        assert not missing_args, f'{self.__class__.__name__}: Missing required kwargs: "{", ".join(missing_args)}"'
 
     def __str__(self):
         template = '\n'.join(
@@ -102,15 +95,18 @@ class Enum(Record):
     :keyword *: Extra keyword arguments
     """
 
-    required = ['choices']
     record = 'mbbo'
     fields = {
         'VAL': '{default}',
         'OUT': '{out}'
     }
 
-    def __init__(self, name, choices=None, out='', default=0, **kwargs):
-        kwargs.update(choices=choices, out=out, default=default)
+    def __init__(self, name, **kwargs):
+        kwargs.update(
+            choices=kwargs.get("choices", ["OFF", "ON"]),
+            out=kwargs.get("out", ""),
+            default=kwargs.get("default", 0)
+        )
         super(Enum, self).__init__(name, **kwargs)
         if isinstance(self.options['choices'], EnumMeta):
             choice_pairs = [(e.name.replace('_', ' '), e.value) for e in self.options['choices']]
@@ -143,9 +139,12 @@ class BinaryOutput(Record):
         'SHFT': '{shift}',
     }
 
-    def __init__(self, name, default=0, out='', shift=0, **kwargs):
-
-        kwargs.update(default=default, out=out, shift=shift)
+    def __init__(self, name, **kwargs):
+        kwargs.update(
+            out=kwargs.get("out", ""),
+            default=kwargs.get("default", 0),
+            shift=kwargs.get("shift", 0)
+        )
         super(BinaryOutput, self).__init__(name, **kwargs)
 
 
@@ -166,8 +165,12 @@ class BinaryInput(Record):
         'SHFT': '{shift}',
     }
 
-    def __init__(self, name, default=0, inp='', shift=0, **kwargs):
-        kwargs.update(default=default, inp=inp, shift=shift)
+    def __init__(self, name, **kwargs):
+        kwargs.update(
+            inp=kwargs.get("inp", ""),
+            default=kwargs.get("default", 0),
+            shift=kwargs.get("shift", 0)
+        )
         super(BinaryInput, self).__init__(name, **kwargs)
 
 
@@ -188,10 +191,12 @@ class Toggle(Record):
         'HIGH': '{high:0.2g}'
     }
 
-    def __init__(self, name, high=0.25, zname=None, oname=None, **kwargs):
-        zname = kwargs['desc'] if not zname else zname
-        oname = kwargs['desc'] if not oname else oname
-        kwargs.update(high=high, zname=zname, oname=oname)
+    def __init__(self, name, **kwargs):
+        kwargs.update(
+            high=kwargs.get("high", 0.1),
+            zname=kwargs.get("zname", name),
+            oname=kwargs.get("oname", "")
+        )
         super(Toggle, self).__init__(name, **kwargs)
 
 
@@ -207,14 +212,16 @@ class String(Record):
     :keyword *: Extra keyword arguments
     """
 
-    required = ['max_length']
     record = 'stringout'
     fields = {
         'VAL': '{default}'
     }
 
-    def __init__(self, name, max_length=20, default=' ', **kwargs):
-        kwargs.update(max_length=max_length, default=default)
+    def __init__(self, name, **kwargs):
+        kwargs.update(
+            max_length=kwargs.get("max_length", 20),
+            default=kwargs.get("default", " ")
+        )
         super(String, self).__init__(name, **kwargs)
         if self.options['max_length'] > 40:
             self.options['record'] = 'waveform'
@@ -235,7 +242,6 @@ class Integer(Record):
     :keyword *: Extra keyword arguments
     """
     record = 'longout'
-    required = ['units']
     fields = {
         'HOPR': '{max_val}',
         'LOPR': '{min_val}',
@@ -245,8 +251,13 @@ class Integer(Record):
         'EGU': '{units}',
     }
 
-    def __init__(self, name, max_val=0, min_val=0, default=0, units='', **kwargs):
-        kwargs.update(max_val=max_val, min_val=min_val, default=default, units=units)
+    def __init__(self, name, **kwargs):
+        kwargs.update(
+            max_val=kwargs.get("max_val", 0),
+            min_val=kwargs.get("min_val", 0),
+            default=kwargs.get("default", 0),
+            units=kwargs.get("units", ""),
+        )
         super(Integer, self).__init__(name, **kwargs)
 
 
@@ -264,7 +275,6 @@ class Float(Record):
     """
 
     record = 'ao'
-    required = ['units']
     fields = {
         'DRVH': '{max_val:0.4e}',
         'DRVL': '{min_val:0.4e}',
@@ -276,7 +286,13 @@ class Float(Record):
     }
 
     def __init__(self, name, max_val=0, min_val=0, default=0.0, prec=4, units='', **kwargs):
-        kwargs.update(max_val=max_val, min_val=min_val, default=default, prec=prec, units=units)
+        kwargs.update(
+            max_val=kwargs.get("max_val", 0),
+            min_val=kwargs.get("min_val", 0),
+            default=kwargs.get("default", 0),
+            prec=kwargs.get("prec", 4),
+            units=kwargs.get("units", ""),
+        )
         super(Float, self).__init__(name, **kwargs)
 
 
@@ -293,15 +309,18 @@ class Calc(Record):
     """
 
     record = 'calc'
-    required = ['calc']
     fields = {
         'CALC': '{calc}',
         'SCAN': '{scan}',
         'PREC': '{prec}',
     }
 
-    def __init__(self, name, scan=0, prec=4, calc='', **kwargs):
-        kwargs.update(scan=scan, prec=prec, calc=calc)
+    def __init__(self, name, **kwargs):
+        kwargs.update(
+            scan=kwargs.get("scan", 0),
+            prec=kwargs.get("prec", 0),
+            calc=kwargs.get("calc", "")
+        )
         super(Calc, self).__init__(name, **kwargs)
         for c in 'ABCDEFGHIJKL':
             key = 'INP{}'.format(c)
@@ -327,8 +346,12 @@ class CalcOut(Calc):
         'OUT': '{out}',
     }
 
-    def __init__(self, name, out='', oopt=0, dopt=0, **kwargs):
-        kwargs.update(out=out, oopt=oopt, dopt=dopt)
+    def __init__(self, name, **kwargs):
+        kwargs.update(
+            out=kwargs.get("out", ""),
+            oopt=kwargs.get("oopt", 0),
+            dopt=kwargs.get("dopt", 0)
+        )
         super(CalcOut, self).__init__(name, **kwargs)
 
 
@@ -342,14 +365,16 @@ class Array(Record):
     :param kwargs: Extra kwargs
     """
     record = 'waveform'
-    required = ['type', 'length']
     fields = {
         'NELM': '{length}',
         'FTVL': '{type}',
     }
 
-    def __init__(self, name, type=int, length=None, **kwargs):
-        kwargs.update(type=type, length=length)
+    def __init__(self, name, **kwargs):
+        kwargs.update(
+            type=kwargs.get("type", int),
+            length=kwargs.get("length", 256),
+        )
         super(Array, self).__init__(name, **kwargs)
         element_type = self.options['type']
         self.options['type'] = {
@@ -447,13 +472,13 @@ class Model(object, metaclass=ModelType):
             for k, v in self._fields.items():
                 db_file.write(str(v))
 
-        with open(self.db_cache_dir/ f'{db_name}.cmd', 'w') as cmd_file:
-            macro_text = ','.join(['{}={}'.format(k,v) for k,v in self.macros.items()])
+        with open(self.db_cache_dir / f'{db_name}.cmd', 'w') as cmd_file:
+            macro_text = ','.join(['{}={}'.format(k, v) for k, v in self.macros.items()])
             cmd_file.write(CMD_TEMPLATE.format(macros=macro_text, db_name=db_name))
-            
+
         os.chdir(self.db_cache_dir)
         args = [self.command, f'{db_name}.cmd']
-        
+
         self.ioc_process = multiprocessing.Process(
             target=run_softioc,
             args=(args, sys.stdin.fileno(), sys.stdout.fileno()),

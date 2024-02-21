@@ -103,3 +103,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 /docs/build/
+/test/testioc/bin/__dbcache__/
