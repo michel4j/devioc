@@ -8,6 +8,7 @@ import time
 from collections.abc import Iterable
 from enum import EnumMeta
 from pathlib import Path
+from typing import Tuple
 
 import gepics
 
@@ -447,6 +448,7 @@ class Model(object, metaclass=ModelType):
 
     def __init__(self, device_name, callbacks=None, command='softIoc', macros=None):
         self.device_name = device_name
+        self.db_name = self.__class__.__name__
         self.callbacks = callbacks or self
         self.ioc_process = None
         self.macros = {'device': self.device_name}
@@ -460,24 +462,36 @@ class Model(object, metaclass=ModelType):
         self._startup()
         self._setup()
 
+    def save_db(self) -> Tuple[Path, Path]:
+        """
+        Save the database and command files
+        :return: Tuple of database and command file paths
+        """
+
+        if not self.db_cache_dir.exists():
+            self.db_cache_dir.mkdir(parents=True, exist_ok=True)
+
+        db_filename = self.db_cache_dir / f'{self.db_name}.db'
+        cmd_filename = self.db_cache_dir / f'{self.db_name}.cmd'
+        with open(db_filename, 'w') as db_file:
+            for k, v in self._fields.items():
+                db_file.write(str(v))
+
+        with open(cmd_filename, 'w') as cmd_file:
+            macro_text = ','.join(['{}={}'.format(k, v) for k, v in self.macros.items()])
+            cmd_file.write(CMD_TEMPLATE.format(macros=macro_text, db_name=self.db_name))
+
+        return db_filename, cmd_filename
+
     def _startup(self):
         """
         Generate the database and start the IOC application in a separate process
         """
-        if not self.db_cache_dir.exists():
-            self.db_cache_dir.mkdir(parents=True, exist_ok=True)
 
-        db_name = self.__class__.__name__
-        with open(self.db_cache_dir / f'{db_name}.db', 'w') as db_file:
-            for k, v in self._fields.items():
-                db_file.write(str(v))
-
-        with open(self.db_cache_dir / f'{db_name}.cmd', 'w') as cmd_file:
-            macro_text = ','.join(['{}={}'.format(k, v) for k, v in self.macros.items()])
-            cmd_file.write(CMD_TEMPLATE.format(macros=macro_text, db_name=db_name))
+        self.save_db()
 
         os.chdir(self.db_cache_dir)
-        args = [self.command, f'{db_name}.cmd']
+        args = [self.command, f'{self.db_name}.cmd']
 
         self.ioc_process = multiprocessing.Process(
             target=run_softioc,
