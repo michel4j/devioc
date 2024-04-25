@@ -8,7 +8,7 @@ import time
 from collections.abc import Iterable
 from enum import EnumMeta
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Tuple, Union, Dict
 
 import gepics
 
@@ -435,8 +435,10 @@ def run_softioc(args, stdin_id, stdout_id):
     """
     Launch EPICS ioc binary
 
+
     :param args:
-    :param stdin_id:
+    :param stdin_id: Standard input file descriptor
+    :param stdout_id: Standard output file descriptor
     :return:
     """
 
@@ -473,7 +475,7 @@ class Model(object, metaclass=ModelType):
     model on which the record resides.
     """
 
-    _fields: dict[str, Record]
+    _fields: Dict[str, Record]
 
     def __init__(self, device_name, callbacks=None, command='softIoc', macros=None):
         self.device_name = device_name
