@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import multiprocessing
 import os
 import platform
@@ -10,7 +8,7 @@ import time
 from collections.abc import Iterable
 from enum import EnumMeta
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union
 
 import gepics
 
@@ -86,6 +84,12 @@ class Record(object, metaclass=RecordType):
         """
         if key in self.instance_fields:
             del self.instance_fields[key]
+
+    def get(self, *args, **kwargs):
+        ...
+
+    def put(self, *args, **kwargs):
+        ...
 
 
 class Enum(Record):
@@ -206,13 +210,6 @@ class Toggle(Record):
 class String(Record):
     """
     String record. Uses standard string record, or character array depending on length
-
-    :param name: Record name (str)
-    :keyword max_length:
-        maximum number of characters expected. Char Array records will be used for fields bigger than 40 characters, in
-        which case the NELM and FTVL field will be set.
-    :keyword default:  default value, empty string by default
-    :keyword *: Extra keyword arguments
     """
 
     record = 'stringout'
@@ -220,10 +217,19 @@ class String(Record):
         'VAL': '{default}'
     }
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name, max_length: Union[int, str] = 20, default: str = " ", **kwargs):
+        """
+        :param name: Record name (str)
+        :param max_length:
+            maximum number of characters expected. Char Array records will be used for fields bigger than 40 characters, in
+            which case the NELM and FTVL field will be set.
+        :param default:  default value, empty string by default
+        :param *: Extra keyword arguments
+
+        """
         kwargs.update(
-            max_length=kwargs.get("max_length", 20),
-            default=kwargs.get("default", " ")
+            max_length=max_length,
+            default=default
         )
         super(String, self).__init__(name, **kwargs)
         if self.options['max_length'] > 40:
@@ -257,9 +263,9 @@ class Integer(Record):
     def __init__(
             self,
             name,
-            max_val: int | str = 0.,
-            min_val: int | str = 0.,
-            default: int | str = 0.,
+            max_val: Union[int, str] = 0.,
+            min_val: Union[int, str] = 0.,
+            default: Union[int, str] = 0.,
             units: str = '',
             **kwargs
     ):
@@ -299,10 +305,10 @@ class Float(Record):
     def __init__(
             self,
             name,
-            max_val: float | str = 0.,
-            min_val: float | str = 0.,
-            default: float | str = 0.,
-            prec: int | str = 4,
+            max_val: Union[float, str] = 0.,
+            min_val: Union[float, str] = 0.,
+            default: Union[float, str] = 0.,
+            prec: Union[float, str] = 4,
             units: str = '',
             **kwargs
     ):
@@ -338,8 +344,8 @@ class Calc(Record):
     def __init__(
             self,
             name: str,
-            scan: int | str = 0,
-            prec: int | str = 0,
+            scan: Union[int,  str] = 0,
+            prec: Union[int,  str] = 0,
             calc: str = '',
             **kwargs
     ):
@@ -358,12 +364,6 @@ class Calc(Record):
 class CalcOut(Calc):
     """
     CalcOutput Record
-
-    :param name: Record name
-    :keyword out: OUT Output specification
-    :keyword oopt: OOPT Output Execute field
-    :keyword dopt: DOPT Output Data field
-    :keyword *: Extra keyword arguments, supports Calc kwargs also.
     """
 
     record = 'calcout'
@@ -373,7 +373,15 @@ class CalcOut(Calc):
         'OUT': '{out}',
     }
 
-    def __init__(self, name, out: str = "", oopt: int | str = 0, dopt: int | str = 0, **kwargs):
+    def __init__(self, name, out: str = "", oopt: Union[int,  str] = 0, dopt: Union[int, str] = 0, **kwargs):
+        """
+        :param name: Record name
+        :param out: OUT Output specification
+        :param oopt: OOPT Output Execute field
+        :param dopt: DOPT Output Data field
+        :param *: Extra keyword arguments, supports Calc kwargs also.
+
+        """
         kwargs.update(out=out, oopt=oopt, dopt=dopt)
         super(CalcOut, self).__init__(name, **kwargs)
 
@@ -393,7 +401,7 @@ class Array(Record):
         'FTVL': '{type}',
     }
 
-    def __init__(self, name, type: str | type = int, length: int | str = 256, **kwargs):
+    def __init__(self, name, type: Union[str, type] = int, length: Union[int, str] = 256, **kwargs):
         kwargs.update(type=type, length=length)
         super(Array, self).__init__(name, **kwargs)
         element_type = self.options['type']
