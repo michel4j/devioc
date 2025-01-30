@@ -61,7 +61,7 @@ class Record(object, metaclass=RecordType):
     def __str__(self):
         template = '\n'.join(
             ['record({record}, "$(device):{name}") {{'] +
-            [f'  field({k}, "{v}")' for k, v in self.instance_fields.items()] +
+            [f'  field({k}, {v!r})' for k, v in self.instance_fields.items()] +
             ['}}', '']
         )
         return template.format(**self.options)
