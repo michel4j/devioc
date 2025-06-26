@@ -1,4 +1,0 @@
-gepics
-numpy
-PyGObject
-Twisted

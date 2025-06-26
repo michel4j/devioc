@@ -1,0 +1,60 @@
+[project]
+name = "devioc"
+description = "Simple Python Device IOC Support for EPICS"
+authors = [
+    {name = "Michel Fodje",email = "michel4j@gmail.com"}
+]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "gepics (>=2021.12.1,<2025.5.0)",
+    "numpy (>=1.2.0,<3.0.0)",
+    "Twisted (>=22.8.0,<24.0)",
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/michel4j/devioc"
+Issues = "https://github.com/michel4j/devioc/issues"
+
+[tool.poetry]
+packages = [
+    { include = "devioc", from = "." },
+]
+version = "0.0.0"
+
+[tool.poetry.scripts]
+devioc = { reference = 'bin/devioc-startproject', type = "file" }
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry.group.dev.dependencies]
+Sphinx = ">=4.2.0"
+sphinx-rtd-theme = ">=1.0.0"
+sphinxcontrib-napoleon = ">=0.7"
+
+[tool.poetry.requires-plugins]
+poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+format = "{base}.{revision}{distance}"
