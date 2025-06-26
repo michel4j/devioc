@@ -6,11 +6,12 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9,<4.0"
 dependencies = [
-    "gepics (>=2021.12.1,<2025.5.0)",
+    "gepics (>=2021.12.3, <2025.0.0)",
+    "PyGObject (>=3.42.2,<4.0.0)",
     "numpy (>=1.2.0,<3.0.0)",
-    "Twisted (>=22.8.0,<24.0)",
+    "Twisted",
 ]
 classifiers = [
     "Intended Audience :: Developers",
