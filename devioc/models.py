@@ -46,7 +46,7 @@ class Record(object, metaclass=RecordType):
 
     record = 'ai'
     fields = {
-        'DESC': '{desc!r}',
+        'DESC': '{desc}',
     }
 
     def __init__(self, name, **kwargs):
@@ -61,7 +61,7 @@ class Record(object, metaclass=RecordType):
     def __str__(self):
         template = '\n'.join(
             ['record({record}, "$(device):{name}") {{'] +
-            [f'  field({k}, {v})' for k, v in self.instance_fields.items()] +
+            [f'  field({k}, "{v}")' for k, v in self.instance_fields.items()] +
             ['}}', '']
         )
         return template.format(**self.options)
@@ -104,8 +104,8 @@ class Enum(Record):
 
     record = 'mbbo'
     fields = {
-        'VAL': '{default!r}',
-        'OUT': '{out!r}'
+        'VAL': '{default}',
+        'OUT': '{out}'
     }
 
     def __init__(self, name, **kwargs):
@@ -141,9 +141,9 @@ class BinaryOutput(Record):
 
     record = 'mbboDirect'
     fields = {
-        'VAL': '{default!r}',
-        'OUT': '{out!r}',
-        'SHFT': '{shift!r}',
+        'VAL': '{default}',
+        'OUT': '{out}',
+        'SHFT': '{shift}',
     }
 
     def __init__(self, name, **kwargs):
@@ -167,9 +167,9 @@ class BinaryInput(Record):
     """
     record = 'mbbiDirect'
     fields = {
-        'VAL': '{default!r}',
-        'INP': '{inp!r}',
-        'SHFT': '{shift!r}',
+        'VAL': '{default}',
+        'INP': '{inp}',
+        'SHFT': '{shift}',
     }
 
     def __init__(self, name, **kwargs):
@@ -193,9 +193,9 @@ class Toggle(Record):
     """
     record = 'bo'
     fields = {
-        'ZNAM': '{zname!r}',
-        'ONAM': '{oname!r}',
-        'HIGH': '{high!r}'
+        'ZNAM': '{zname}',
+        'ONAM': '{oname}',
+        'HIGH': '{high}'
     }
 
     def __init__(self, name, **kwargs):
@@ -214,7 +214,7 @@ class String(Record):
 
     record = 'stringout'
     fields = {
-        'VAL': '{default!r}'
+        'VAL': '{default}'
     }
 
     def __init__(self, name, max_length: Union[int, str] = 20, default: str = " ", **kwargs):
@@ -252,12 +252,12 @@ class Integer(Record):
     """
     record = 'longout'
     fields = {
-        'HOPR': '{max_val!r}',
-        'LOPR': '{min_val!r}',
-        'DRVH': '{max_val!r}',
-        'DRVL': '{min_val!r}',
-        'VAL': '{default!r}',
-        'EGU': '{units!r}',
+        'HOPR': '{max_val}',
+        'LOPR': '{min_val}',
+        'DRVH': '{max_val}',
+        'DRVL': '{min_val}',
+        'VAL': '{default}',
+        'EGU': '{units}',
     }
 
     def __init__(
@@ -293,13 +293,13 @@ class Float(Record):
 
     record = 'ao'
     fields = {
-        'DRVH': '{max_val!r}',
-        'DRVL': '{min_val!r}',
-        'HOPR': '{max_val!r}',
-        'LOPR': '{min_val!r}',
-        'PREC': '{prec!r}',
-        'EGU': '{units!r}',
-        'VAL': '{default!r}'
+        'DRVH': '{max_val}',
+        'DRVL': '{min_val}',
+        'HOPR': '{max_val}',
+        'LOPR': '{min_val}',
+        'PREC': '{prec}',
+        'EGU': '{units}',
+        'VAL': '{default}'
     }
 
     def __init__(
@@ -336,9 +336,9 @@ class Calc(Record):
 
     record = 'calc'
     fields = {
-        'CALC': '{calc!r}',
-        'SCAN': '{scan!r}',
-        'PREC': '{prec!r}',
+        'CALC': '{calc}',
+        'SCAN': '{scan}',
+        'PREC': '{prec}',
     }
 
     def __init__(
@@ -368,9 +368,9 @@ class CalcOut(Calc):
 
     record = 'calcout'
     fields = {
-        'OOPT': '{oopt!r}',
-        'DOPT': '{dopt!r}',
-        'OUT': '{out!r}',
+        'OOPT': '{oopt}',
+        'DOPT': '{dopt}',
+        'OUT': '{out}',
     }
 
     def __init__(self, name, out: str = "", oopt: Union[int,  str] = 0, dopt: Union[int, str] = 0, **kwargs):
@@ -397,8 +397,8 @@ class Array(Record):
     """
     record = 'waveform'
     fields = {
-        'NELM': '{length!r}',
-        'FTVL': '{type!r}',
+        'NELM': '{length}',
+        'FTVL': '{type}',
     }
 
     def __init__(self, name, type: Union[str, type] = int, length: Union[int, str] = 256, **kwargs):
