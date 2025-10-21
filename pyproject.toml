@@ -8,8 +8,8 @@ license = "MIT"
 readme = "README.md"
 requires-python = ">=3.9,<4.0"
 dependencies = [
-    "gepics (>=2021.12.3, <2025.0.0)",
-    "PyGObject (>=3.42.2,<4.0.0)",
+    "gepics (>=2025.10.3, <2026.0.0)",
+    "PyGObject (>=3.44.2,<4.0.0)",
     "numpy (>=1.2.0,<3.0.0)",
     "Twisted",
 ]
