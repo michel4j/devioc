@@ -218,20 +218,20 @@ files = [
 
 [[package]]
 name = "gepics"
-version = "2021.12.3"
-description = "Python GObject Wrapper for EPICS Process Variables"
+version = "2025.10.3"
+description = "GObject Wrapper for PyEPICS PV"
 optional = false
-python-versions = "*"
+python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "gepics-2021.12.3-py3-none-any.whl", hash = "sha256:ea57178a7cf7d05b3f1581a2e6e20bda16a4723379bc6d5dc8127701ac635673"},
-    {file = "gepics-2021.12.3.tar.gz", hash = "sha256:58ca5462d99f5fcc18abac7097eea480178743a87b749c24e1c05bd0252f98e3"},
+    {file = "gepics-2025.10.3-py3-none-any.whl", hash = "sha256:00a8e9bb8a26607b2590e8bf4e4848bf33314d42cae68f0367da2cf24837a2f7"},
+    {file = "gepics-2025.10.3.tar.gz", hash = "sha256:7773b047a1e14d490d38fc708a97e4a092e0d4ce86f2f7074ee609dd51a7f6b5"},
 ]
 
 [package.dependencies]
-numpy = "*"
-pyepics = "*"
-PyGObject = "*"
+numpy = ">=2.0.0,<3.0.0"
+pyepics = ">=3.5.8,<4.0.0"
+pygobject = ">=3.44.0,<4.0.0"
 
 [[package]]
 name = "hyperlink"
@@ -1025,4 +1025,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "9ec43d139192f782c22fd8b34a6b6b3bafe5100943585b937ed14a0e54bac5a5"
+content-hash = "5d094b810d90d830faeae96c0bceaa951d5a0fbd1c3eeb0e72fdf03eeeb3fa20"
